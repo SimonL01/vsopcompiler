@@ -293,14 +293,23 @@ namespace Compilers::LexicalAnalyzers
                 advance();
                 return {Tokens::Token::TClass::EQUAL, "=", this->line, this->column};
             case '<':
-                advance();
-                return {Tokens::Token::TClass::LOWER, "<", this->line, this->column};
-            case '<=':
-                advance();
-                return {Tokens::Token::TClass::LOWER_EQUAL, "<=", this->line, this->column};
-            case '<-':
-                advance();
-                return {Tokens::Token::TClass::ASSIGN, "<-", this->line, this->column};
+                // If currentChar is '<', we need to check if the next character is '=' or '-'
+                if (this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == '=')
+                {
+                    advance();
+                    advance();
+                    return {Tokens::Token::TClass::LOWER_EQUAL, "<=", this->line, this->column};
+                }
+                else if (this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == '-')
+                {
+                    advance();
+                    advance();
+                    return {Tokens::Token::TClass::ASSIGN, "<-", this->line, this->column};
+                }
+                else
+                {
+                    return {Tokens::Token::TClass::LOWER, "<", this->line, this->column};
+                }
             default:
                 throw std::runtime_error("Invalid token.");
             }

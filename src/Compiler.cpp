@@ -15,9 +15,9 @@ using std::getline;
 namespace Compilers
 {
     // Default constructor that initializes the "lexAnalysis" attribute with a hardcoded VSOP code. It uses "std::make_unique" to dynamically allocate a "LexicalAnalyzer" object.
-    Compiler::Compiler() : lexAnalysis(make_unique<LexicalAnalyzer>())
-    {
-    }
+    //Compiler::Compiler() : lexAnalysis(make_unique<LexicalAnalyzer>())
+    //{
+    //}
 
    Compiler::Compiler(string sourceFile) : lexAnalysis(make_unique<LexicalAnalyzer>(this->readFileToString(sourceFile))), sourceFilePath(sourceFile)
     {

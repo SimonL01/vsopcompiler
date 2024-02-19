@@ -1,5 +1,9 @@
-# make vsopc -l exemple.vsop
+### Cleaning
 # make clean
+### Compiling
+# make vsopc 
+### Running
+# ./bin/vsopc -l exemple.vsop
 
 # compiler and flags
 CXX = g++
