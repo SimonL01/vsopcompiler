@@ -121,6 +121,7 @@ namespace Compilers::LexicalAnalyzers
             advance();
         }
         // Check if the tokenValue is a keyword
+        // find returns an iterator to the element if found, otherwise it returns an iterator to the end of the map
         auto it = this->keyWordMap.find(tokenValue);
         if (it != keyWordMap.end())
         {
@@ -131,7 +132,7 @@ namespace Compilers::LexicalAnalyzers
         {
             return {Tokens::Token::TClass::TYPE_IDENTIFIER, tokenValue, startLine, startColumn};
         }
-        return {Tokens::Token::OBJECT_IDENTIFIER, tokenValue, startLine, startColumn};
+        return {Tokens::Token::TClass::OBJECT_IDENTIFIER, tokenValue, startLine, startColumn};
     }
 
     Tokens::Token LexicalAnalyzer::scanIntegerLiteral()

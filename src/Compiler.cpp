@@ -15,7 +15,7 @@ using std::getline;
 namespace Compilers
 {
     // Default constructor that initializes the "lexAnalysis" attribute with a hardcoded VSOP code. It uses "std::make_unique" to dynamically allocate a "LexicalAnalyzer" object.
-    Compiler::Compiler() : lexAnalysis(make_unique<LexicalAnalyzer>("class MyClass { var x : int := 10; in test : string := \"try this string\"; // Comment here \n method myMethod() : int { return x + 5; } }"))
+    Compiler::Compiler() : lexAnalysis(make_unique<LexicalAnalyzer>())
     {
     }
 

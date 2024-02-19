@@ -5,7 +5,7 @@
 
 #include "Compiler.hpp"
 
-#define ABSOLUTE_PATH "../srcFile/"
+#define ABSOLUTE_PATH "./srcFile/"
 
 using Compilers::Compiler;
 using std::cout;
