@@ -19,10 +19,8 @@ namespace Compilers
     {
     }
 
-    Compiler::Compiler(string sourceFile) : lexAnalysis(make_unique<LexicalAnalyzer>("class MyClass { var x : int := 10; in test : string := \"try this string\"; // Comment here \n method myMethod() : int { return x + 5; } }")), sourceFilePath(sourceFile)
+   Compiler::Compiler(string sourceFile) : lexAnalysis(make_unique<LexicalAnalyzer>(this->readFileToString(sourceFile))), sourceFilePath(sourceFile)
     {
-        string vsopCode = this->readFileToString(sourceFile);
-        std::cerr << vsopCode << endl;
     }
 
     std::string Compiler::readFileToString(const std::string &filename)

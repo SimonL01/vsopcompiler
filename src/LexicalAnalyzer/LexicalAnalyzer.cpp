@@ -1,7 +1,10 @@
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <vector>
 #include <cctype>
+#include <stdlib.h>
+#include <stdexcept>
 
 #include "LexicalAnalyzer.hpp"
 
@@ -12,6 +15,48 @@ using std::vector;
 
 namespace Compilers::LexicalAnalyzers
 {
+    // Convert a string to an int, if possible
+    // Returns -1 if conversion fails
+    static int str2maybeint(const string &s)
+    {
+        size_t l = s.length();
+
+        if (l > 2 && s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
+        {
+            for (size_t i = 2; i < l; ++i)
+            {
+                if (!std::isxdigit(s[i]))
+                {
+                    return -1;
+                }
+            }
+            try
+            {
+                return std::stoi(s, nullptr, 16);
+            }
+            catch (const std::out_of_range &)
+            {
+                return -1; // Gestion de dépassement de capacité
+            }
+        }
+
+        for (size_t i = 0; i < l; ++i)
+        {
+            if (!std::isdigit(s[i]))
+            {
+                return -1;
+            }
+        }
+        try
+        {
+            return std::stoi(s, nullptr, 10);
+        }
+        catch (const std::out_of_range &)
+        {
+            return -1; // Gestion de dépassement de capacité
+        }
+    }
+
     LexicalAnalyzer::LexicalAnalyzer(const string &sourceFile) : vsopCode(sourceFile), location(0), line(1), column(1)
     {
         this->keyWordMap = {
