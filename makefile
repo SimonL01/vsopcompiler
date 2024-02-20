@@ -65,4 +65,9 @@ run:
 vsopc:
 	make
 
+all:
+	make clean
+	make vsopc
+	./bin/vsopc -l exemple.vsop
+
 install-tools:

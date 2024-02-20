@@ -57,6 +57,17 @@ namespace Compilers::LexicalAnalyzers
         }
     }
 
+    static std::string char2hex(char c) {
+        std::string s = "\\x00";
+
+        char d = c / 16;
+        s[2] = d + (d < 10 ? '0' : 'a' - 10);
+        d = c % 16;
+        s[3] = d + (d < 10 ? '0' : 'a' - 10);
+
+        return s;
+    }
+
     LexicalAnalyzer::LexicalAnalyzer(const string &sourceFile) : vsopCode(sourceFile), location(0), line(1), column(1)
     {
         this->keyWordMap = {
@@ -198,31 +209,81 @@ namespace Compilers::LexicalAnalyzers
         std::string tokenValue;
         size_t startLine = this->line;
         size_t startColumn = this->column;
+        if(this->vsopCode[this->location] == '"'){
+            tokenValue += '"';   
+        }
         advance(); // Skip the opening quote
         while (this->location < this->vsopCode.length() && this->vsopCode[this->location] != '"')
         {
+            // \\ is an escape sequence for a SINGLE backslash
             if (this->vsopCode[this->location] == '\\')
             {
-                advance();
-                if (this->location < this->vsopCode.length())
+                // print this->vsopCode[this->location] to see the escape sequence
+                // cout << this->vsopCode[this->location] << endl;
+
+                // Skip all leading whitespace on the next line
+                while (std::isspace(this->vsopCode[this->location+1]))
                 {
+                    advance();
+                }
+                while (this->vsopCode[this->location+1] == '\n'){
+                    advance();
+                }
+
+                if (this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 'b' && this->vsopCode[this->location] == '\\')
+                {
+                    tokenValue += char2hex('\b');
+                    advance();
+                }
+                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 't' && this->vsopCode[this->location] == '\\'){
+                    tokenValue += char2hex('\t');
+                    advance();
+                }
+                else if (this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 'n' && this->vsopCode[this->location] == '\\')
+                {
+                    tokenValue += char2hex('\n');
+                    advance();
+                }
+                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 'r'){
+                    tokenValue += char2hex('\r');
+                    advance();
+                }
+                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == '"'){
+                    throw std::runtime_error("Incorrect Use of Quotes");
+                    //tokenValue += '"';
+                    //advance();
+                }
+                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == '\\'&& this->vsopCode[this->location] == '\\'){
+                    tokenValue += '\\';
+                    advance();
+                }
+                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location] == '\\'){
                     tokenValue += this->vsopCode[this->location];
                 }
+                advance();
             }
             else
             {
+                if(this->vsopCode[this->location] == '\n' && this->vsopCode[this->location+1] != '\\'){
+                    while (std::isspace(this->vsopCode[this->location+1]))
+                    {
+                        advance();
+                    }
+                }
                 tokenValue += this->vsopCode[this->location];
+                advance();
             }
-            advance();
         }
         if (this->location >= this->vsopCode.length() || this->vsopCode[this->location] != '"')
         {
             throw std::runtime_error("Unterminated string literal.");
         }
+        tokenValue += '"'; // Add the closing quote
         advance(); // Skip the closing quote
+    
         return {Tokens::Token::TClass::STRING_LITERAL, tokenValue, startLine, startColumn};
     }
-
+    
     Tokens::Token LexicalAnalyzer::get_next_token()
     {
         skip_space_and_comment();

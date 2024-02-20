@@ -18,6 +18,7 @@ namespace Compilers::LexicalAnalyzers
         void tokenize();
         std::vector<Tokens::Token> get_tokens() const;
         void advance();
+        void advanceInString();
         void skip_space_and_comment();
         Tokens::Token scanIdentifier();
         Tokens::Token scanIntegerLiteral();
