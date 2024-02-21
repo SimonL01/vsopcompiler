@@ -223,7 +223,7 @@ namespace Compilers::LexicalAnalyzers
             if (this->vsopCode[this->location] == '\\') // \\ is an escape sequence for a SINGLE backslash
             {
                 // It is an error if a string contains an invalid escape sequence
-                if(this->vsopCode[this->location+1] != 'b' && this->vsopCode[this->location+1] != 't' && this->vsopCode[this->location+1] != 'n' && this->vsopCode[this->location+1] != 'r' && this->vsopCode[this->location+1] != '"' && this->vsopCode[this->location+1] != '\\' && this->vsopCode[this->location+1] != 'x' && this->vsopCode[this->location+1] != '\n'&& this->vsopCode[this->location+1] != ' ')
+                if(this->vsopCode[this->location+1] != 'b' && this->vsopCode[this->location+1] != 't' && this->vsopCode[this->location+1] != 'n' && this->vsopCode[this->location+1] != 'r' && this->vsopCode[this->location+1] != '"' && this->vsopCode[this->location+1] != '\\' && this->vsopCode[this->location+1] != 'x' && this->vsopCode[this->location+1] != '\n')
                 {
                     throw std::runtime_error("Invalid escape sequence.");
                 }
@@ -284,7 +284,7 @@ namespace Compilers::LexicalAnalyzers
             }
             else
             {
-                if(this->vsopCode[this->location] == '\n' && this->vsopCode[this->location+1] != '\\'){
+                if(this->vsopCode[this->location] != '\n' && this->vsopCode[this->location-1] == '\\'){
                     // raw line feed error
                     throw std::runtime_error("Raw line feed in string literal.");
                 }
