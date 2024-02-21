@@ -218,15 +218,15 @@ namespace Compilers::LexicalAnalyzers
             // \\ is an escape sequence for a SINGLE backslash
             if (this->vsopCode[this->location] == '\\')
             {
-                // print this->vsopCode[this->location] to see the escape sequence
-                // cout << this->vsopCode[this->location] << endl;
+                // It is an error if a string contains an invalid escape sequence
+                if(this->vsopCode[this->location+1] != 'b' && this->vsopCode[this->location+1] != 't' && this->vsopCode[this->location+1] != 'n' && this->vsopCode[this->location+1] != 'r' && this->vsopCode[this->location+1] != '"' && this->vsopCode[this->location+1] != '\\' && this->vsopCode[this->location+1] != 'x' && this->vsopCode[this->location+1] != '\n')
+                {
+                    throw std::runtime_error("Invalid escape sequence.");
+                }
 
                 // Skip all leading whitespace on the next line
                 while (std::isspace(this->vsopCode[this->location+1]))
                 {
-                    advance();
-                }
-                while (this->vsopCode[this->location+1] == '\n'){
                     advance();
                 }
 
@@ -244,31 +244,45 @@ namespace Compilers::LexicalAnalyzers
                     tokenValue += char2hex('\n');
                     advance();
                 }
-                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 'r'){
+                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 'r' && this->vsopCode[this->location] == '\\'){
                     tokenValue += char2hex('\r');
                     advance();
                 }
-                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == '"'){
-                    throw std::runtime_error("Incorrect Use of Quotes");
-                    //tokenValue += '"';
-                    //advance();
+                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == '"' && this->vsopCode[this->location] == '\\'){
+                    // throw std::runtime_error("Incorrect Use of Quotes");
+                    // \" double-quote (not ending the string)
+                    tokenValue += '"';
+                    advance();
                 }
-                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == '\\'&& this->vsopCode[this->location] == '\\'){
+                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == '\\' && this->vsopCode[this->location] == '\\'){
                     tokenValue += '\\';
                     advance();
                 }
-                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location] == '\\'){
-                    tokenValue += this->vsopCode[this->location];
+                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 'x' && this->vsopCode[this->location] == '\\'){
+                    if(std::isxdigit(this->vsopCode[this->location+2]) && std::isxdigit(this->vsopCode[this->location+3])){
+                        tokenValue += char2hex(std::stoi(this->vsopCode.substr(this->location+2, 2), nullptr, 16));
+                        advance();
+                        advance();
+                        advance();
+                    }
+                    else
+                    {
+                        throw std::runtime_error("Invalid hexadecimal character byte sequence.");
+                    }
+                }
+                else
+                {   
+                    if(this->vsopCode[this->location] == '\n'){
+                    throw std::runtime_error("Backslash not followed by end of line.");
+                    }
                 }
                 advance();
             }
             else
             {
                 if(this->vsopCode[this->location] == '\n' && this->vsopCode[this->location+1] != '\\'){
-                    while (std::isspace(this->vsopCode[this->location+1]))
-                    {
-                        advance();
-                    }
+                    // raw line feed error
+                    throw std::runtime_error("Raw line feed in string literal.");
                 }
                 tokenValue += this->vsopCode[this->location];
                 advance();
