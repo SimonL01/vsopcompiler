@@ -209,17 +209,21 @@ namespace Compilers::LexicalAnalyzers
         std::string tokenValue;
         size_t startLine = this->line;
         size_t startColumn = this->column;
+
+        // Insérer " dans la chaine de caractère puis advance
         if(this->vsopCode[this->location] == '"'){
             tokenValue += '"';   
         }
         advance(); // Skip the opening quote
+
+
         while (this->location < this->vsopCode.length() && this->vsopCode[this->location] != '"')
         {
-            // \\ is an escape sequence for a SINGLE backslash
-            if (this->vsopCode[this->location] == '\\')
+            // Si le character est \\, alors je vérifie la suite en essayant de respecter les guidelines
+            if (this->vsopCode[this->location] == '\\') // \\ is an escape sequence for a SINGLE backslash
             {
                 // It is an error if a string contains an invalid escape sequence
-                if(this->vsopCode[this->location+1] != 'b' && this->vsopCode[this->location+1] != 't' && this->vsopCode[this->location+1] != 'n' && this->vsopCode[this->location+1] != 'r' && this->vsopCode[this->location+1] != '"' && this->vsopCode[this->location+1] != '\\' && this->vsopCode[this->location+1] != 'x' && this->vsopCode[this->location+1] != '\n')
+                if(this->vsopCode[this->location+1] != 'b' && this->vsopCode[this->location+1] != 't' && this->vsopCode[this->location+1] != 'n' && this->vsopCode[this->location+1] != 'r' && this->vsopCode[this->location+1] != '"' && this->vsopCode[this->location+1] != '\\' && this->vsopCode[this->location+1] != 'x' && this->vsopCode[this->location+1] != '\n'&& this->vsopCode[this->location+1] != ' ')
                 {
                     throw std::runtime_error("Invalid escape sequence.");
                 }
