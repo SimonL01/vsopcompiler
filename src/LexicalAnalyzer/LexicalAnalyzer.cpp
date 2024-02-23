@@ -301,10 +301,6 @@ namespace Compilers::LexicalAnalyzers
             else
             {
                 if(this->vsopCode[this->location+1] == '\n' && this->vsopCode[this->location] != '\\'){
-                    
-                    // print position, this->line, this->column
-                    cout << "Position +1: " << this->vsopCode[this->location+1] << " Position: " << this->vsopCode[this->location] << " Column: " << this->column << endl;
-
                     // It is an error if a string literal contains a raw line feed
                     throw std::runtime_error("Raw line feed in string literal Fuck.");
                 }
