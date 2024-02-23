@@ -212,7 +212,7 @@ namespace Compilers::LexicalAnalyzers
 
         // Insérer " dans la chaine de caractère puis advance
         if(this->vsopCode[this->location] == '"'){
-            tokenValue += '"';   
+            tokenValue += '"';
         }
         if(this->vsopCode[this->location] == '"' && this->vsopCode[this->location+1] == '"'){
             // empty string
@@ -232,7 +232,7 @@ namespace Compilers::LexicalAnalyzers
             if (this->vsopCode[this->location] == '\\') // \\ is an escape sequence for a SINGLE backslash
             {
                 while (this->vsopCode[this->location+1] == '\\'){
-                    tokenValue += '\\';
+                    tokenValue += char2hex('\\');
                     advance();
                 }
 
@@ -277,11 +277,11 @@ namespace Compilers::LexicalAnalyzers
                 else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == '"' && this->vsopCode[this->location] == '\\'){
                     // throw std::runtime_error("Incorrect Use of Quotes");
                     // \" double-quote (not ending the string)
-                    tokenValue += '"';
+                    tokenValue += char2hex('\"');
                     advance();
                 }
                 else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == '\\' && this->vsopCode[this->location] == '\\'){
-                    tokenValue += '\\';
+                    tokenValue += char2hex('\\');
                     advance();
                 }
                 else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 'x' && this->vsopCode[this->location] == '\\'){
@@ -308,8 +308,14 @@ namespace Compilers::LexicalAnalyzers
                     // It is an error if a string literal contains a raw line feed
                     throw std::runtime_error("Raw line feed in string literal Fuck.");
                 }
-                tokenValue += this->vsopCode[this->location];
-                advance();
+
+                if(this->vsopCode[this->location]=='\\'){
+                    tokenValue += char2hex('\\');
+                }
+                else{
+                    tokenValue += this->vsopCode[this->location];
+                    advance();
+                }
             }
         }
         if (this->location >= this->vsopCode.length() || this->vsopCode[this->location] != '"')
