@@ -1,6 +1,5 @@
 #include <iostream>
 
-
 #include "Token.hpp"
 
 using std::cout;
@@ -9,7 +8,6 @@ using std::string;
 
 namespace Compilers::Tokens
 {
-    // Converts the "TClass" enum values into their string representations
     string Token::token_ToString(TClass tokenClass)
     {
         switch (tokenClass)
@@ -96,42 +94,44 @@ namespace Compilers::Tokens
             return "lower-equal";
         case TClass::ASSIGN:
             return "assign";
+        case TClass::END_OF_FILE:
+            return "end-of-file";
+        case TClass::NOT_A_TOKEN:
+            return "not-a-token";
         default:
             return "unknow value";
         }
     }
 
-    // Default constructor that initializes a token with no parameters
     Token::Token()
-    {  
+    {
     }
 
-    // Constructor that takes "TClass, "line" and "column" as parameters to initialize a token without a value.
     Token::Token(TClass tokenClass, size_t line, size_t column) : tokenClass(tokenClass), tokenValue(""), line(line), column(column)
     {
     }
 
-    // Constructor that takes "TClass, "tokenValue", "line" and "column" as parameters to initialize a token with a value (as a string).
     Token::Token(TClass tokenClass, string tokenValue, size_t line, size_t column) : tokenClass(tokenClass), tokenValue(tokenValue), line(line), column(column)
     {
     }
 
-    // Returns the token class "TClass" of the token
     Token::TClass Token::get_tokenClass() const
     {
         return this->tokenClass;
     }
 
-    // Prints the token's details to standard output
     void Token::print_token() const
     {
-        if (tokenValue.empty())
+        if (tokenClass != TClass::END_OF_FILE)
         {
-            cout << this->line << "," << this->column << "," << token_ToString(this->tokenClass) << endl;
-        }
-        else
-        {
-            cout << this->line << "," << this->column << "," << token_ToString(this->tokenClass) << "," << this->tokenValue << endl;
+            if (tokenClass == TClass::TYPE_IDENTIFIER || tokenClass == TClass::OBJECT_IDENTIFIER || tokenClass == TClass::STRING_LITERAL || tokenClass == TClass::INTEGER_LITERAL)
+            {
+                cout << this->line << "," << this->column << "," << token_ToString(this->tokenClass) << "," << this->tokenValue << endl;
+            }
+            else
+            {
+                cout << this->line << "," << this->column << "," << token_ToString(this->tokenClass) << endl;
+            }
         }
     }
 

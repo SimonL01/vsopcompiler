@@ -5,7 +5,6 @@
 
 #include "Compiler.hpp"
 
-#define ABSOLUTE_PATH "./srcFile/"
 
 using Compilers::Compiler;
 using std::cout;
@@ -51,7 +50,7 @@ int main(int argc, char const *argv[])
         return EXIT_FAILURE;
     }
 
-    unique_ptr<Compiler> compiler = make_unique<Compiler>(ABSOLUTE_PATH + sourceFile);
+    unique_ptr<Compiler> compiler = make_unique<Compiler>(sourceFile);
 
     int opSucces;
     switch (mode)

@@ -8,30 +8,27 @@
 
 #include "../Token/Token.hpp"
 
-
 namespace Compilers::LexicalAnalyzers
 {
     class LexicalAnalyzer
     {
     public:
-        LexicalAnalyzer(const std::string& sourceFile);
+        LexicalAnalyzer(const std::string &sourceFile, const std::string &sourceFileName);
         void tokenize();
         std::vector<Tokens::Token> get_tokens() const;
         void advance();
-        void advanceInString();
+        void advance_comment();
+        bool is_curr_operator();
         void skip_space_and_comment();
         Tokens::Token scanIdentifier();
         Tokens::Token scanIntegerLiteral();
         Tokens::Token scanStringLiteral();
         Tokens::Token get_next_token();
-
-        //char get_next_char() const;
-        //char get_second_next_char() const;
-        //void consume_next_char();
-        //void skip_space_and_comment();
+        void print_error(size_t line, size_t column, const std::string& lexicalErrorDescription) const;
 
     protected:
         std::string vsopCode;
+        std::string vsopFileName;
         size_t location;
         size_t line;
         size_t column;

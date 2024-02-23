@@ -11,9 +11,8 @@ namespace Compilers
     class Compiler
     {
     public:
-        Compiler();
         Compiler(std::string sourceFile);
-        std::string readFileToString(const std::string& filename);
+        std::string readFileToString(const std::string &filename);
         int lex();
         int parse();
 

@@ -4,13 +4,11 @@
 /* Includes */
 #include <string>
 
-
 namespace Compilers::Tokens
 {
     class Token
     {
     public:
-        // Defines a set of token classes representing the different types of tokens that can be identified in VSOPC
         enum class TClass
         {
             AND,
@@ -54,23 +52,20 @@ namespace Compilers::Tokens
             LOWER,
             LOWER_EQUAL,
             ASSIGN,
+            NOT_A_TOKEN,
             END_OF_FILE
         };
 
-        // static method that converts the "TClass" enum values into their string representations (implementation done in Token.cpp)
         static std::string token_ToString(TClass tokenClass);
 
     public:
-        // Constructors for creating tokens
         Token();
         Token(TClass tokenClass, size_t line, size_t column);
         Token(TClass tokenClass, std::string tokenValue, size_t line, size_t column);
-        // Accessors
         TClass get_tokenClass() const;
         void print_token() const;
 
     protected:
-        // Attributes : type of the token, value of the token, line and column (position in the source code)
         TClass tokenClass;
         std::string tokenValue;
         size_t line;

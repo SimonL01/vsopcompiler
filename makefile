@@ -1,9 +1,4 @@
-### Cleaning
-# make clean
-### Compiling
-# make vsopc 
-### Running
-# ./bin/vsopc -l exemple.vsop
+
 
 # compiler and flags
 CXX = g++
@@ -16,14 +11,17 @@ SRCDIR = src
 OBJDIR = obj
 BINDIR = bin
 
-# Executable name : specifies the path and the name of the final executable file
+# Executable name
 TARGET = $(BINDIR)/vsopc
+
+# Archive
+ARCHIVE_NAME = vsopcompiler.tar.xz
+FILES_TO_ARCHIVE = vsopcompiler
 
 # Sources and objects for each package
 # Each package's objects are compiled into a separate .o file
-MAIN_SRCS = $(wildcard $(SRCDIR)/*.cpp) # wildcard function returns a list of all files in the directory that match the pattern (here find all .cpp files in the src directory)
-MAIN_OBJS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(MAIN_SRCS)) # patsubst function replaces the first pattern with the second pattern in a list of words
-# So here "patsubst" replaces the pattern $(SRCDIR)/%.cpp with $(OBJDIR)/%.o in the list of words $(MAIN_SRCS)
+MAIN_SRCS = $(wildcard $(SRCDIR)/*.cpp)
+MAIN_OBJS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(MAIN_SRCS))
 
 LEXICALANALYZER_SRCS = $(wildcard $(SRCDIR)/LexicalAnalyzer/*.cpp)
 LEXICALANALYZER_OBJS = $(patsubst $(SRCDIR)/LexicalAnalyzer/%.cpp,$(OBJDIR)/LexicalAnalyzer/%.o,$(LEXICALANALYZER_SRCS))
@@ -57,17 +55,21 @@ $(OBJDIR)/Token/%.o: $(SRCDIR)/Token/%.cpp $(TOKEN_DEPS)
 
 # Clean up object and executable files
 clean:
-	rm -rf $(OBJDIR)/* $(TARGET)
+	rm -rf $(OBJDIR)/* $(TARGET) vsopc
 
 run:
 	$(TARGET) 
 
 vsopc:
+	mkdir -p bin
 	make
+	cp $(TARGET)  .
 
 all:
-	make clean
 	make vsopc
 	./bin/vsopc -l exemple.vsop
 
 install-tools:
+
+archive:
+	tar -cJf $(ARCHIVE_NAME) $(FILES_TO_ARCHIVE)
