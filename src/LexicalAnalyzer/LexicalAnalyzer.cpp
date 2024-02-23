@@ -82,6 +82,15 @@ namespace Compilers::LexicalAnalyzers
         case '*':
         case '/':
         case '=':
+        case '{':
+        case '}':
+        case '(':
+        case ')':
+        case ':':
+        case ';':
+        case ',':
+        case '^':
+        case '.':
             return {true};
         case '<':
             if (this->location + 1 < this->vsopCode.length() && (this->vsopCode[this->location + 1] == '=' || this->vsopCode[this->location + 1] == '-' || isspace(this->vsopCode[this->location])))
@@ -97,7 +106,7 @@ namespace Compilers::LexicalAnalyzers
         }
     }
 
-    LexicalAnalyzer::LexicalAnalyzer(const string &sourceFile, const string &sourceFileName) : vsopCode(sourceFile), vsopFileName(sourceFileName), location(0), line(1), column(1)
+    LexicalAnalyzer::LexicalAnalyzer(const string &sourceFile, const string &sourceFileName) : vsopCode(sourceFile), vsopFileName(sourceFileName), location(0), line(1), column(1), opSucces(0)
     {
         this->keyWordMap = {
             {"and", Tokens::Token::TClass::AND},
@@ -134,6 +143,11 @@ namespace Compilers::LexicalAnalyzers
                 tokens.push_back(token);
             }
         } while (token.get_tokenClass() != Tokens::Token::TClass::END_OF_FILE);
+    }
+
+    int LexicalAnalyzer::get_opSucces()
+    {
+        return this->opSucces;
     }
 
     vector<Tokens::Token> LexicalAnalyzer::get_tokens() const
@@ -184,6 +198,11 @@ namespace Compilers::LexicalAnalyzers
     {
         while (this->location < this->vsopCode.length() && (isspace(this->vsopCode[this->location]) || this->vsopCode[this->location] == '/' || this->vsopCode[this->location] == '('))
         {
+            if ((this->vsopCode[this->location] == '/') && (this->location + 1 < this->vsopCode.length()) && !(this->vsopCode[this->location + 1] == '/') && !(this->vsopCode[this->location + 1] == '('))
+            {
+                return;
+            }
+
             if (this->vsopCode[this->location] == '\n' || isspace(this->vsopCode[this->location]))
             {
                 advance_comment();
@@ -282,6 +301,11 @@ namespace Compilers::LexicalAnalyzers
             tokenValue += this->vsopCode[this->location]; // Add 'x'
             advance();
 
+            if (!(std::isxdigit(this->vsopCode[this->location])))
+            {
+                print_error(startLine, startColumn, "0x is not a valid integer litteral");
+            }
+
             // Read hexadecimal digits
             while (std::isxdigit(this->vsopCode[this->location]))
             {
@@ -338,129 +362,137 @@ namespace Compilers::LexicalAnalyzers
 
     Tokens::Token LexicalAnalyzer::scanStringLiteral()
     {
-        std::string tokenValue;
+        string tokenValue;
         size_t startLine = this->line;
         size_t startColumn = this->column;
-
-        // Insérer " dans la chaine de caractère puis advance
-        if(this->vsopCode[this->location] == '"'){
+        // openning quote part //
+        if (this->vsopCode[this->location] == '"')
+        {
             tokenValue += '"';
-        }
-        if(this->vsopCode[this->location] == '"' && this->vsopCode[this->location+1] == '"'){
-            // empty string
-            // throw std::runtime_error("empty string : unspecified behavior");
-            print_error(this->line, this->column, "Empty string : unspecified behavior");
         }
         advance(); // Skip the opening quote
 
-
+        // inside string part //
         while (this->location < this->vsopCode.length() && this->vsopCode[this->location] != '"')
         {
-            if(this->vsopCode[this->location] == '\\' && this->vsopCode[this->location+1] == '"' && this->vsopCode[this->location+2] == '\n'){
-                // It is an error if trying to format as such \" at the end of a line
-                // throw std::runtime_error("Unterminated string literal");
-                print_error(startLine, startColumn, "unterminated-string");
-            }
-
-            // Si le character est \\, alors je vérifie la suite en essayant de respecter les guidelines
-            if (this->vsopCode[this->location] == '\\') // \\ is an escape sequence for a SINGLE backslash
+            if (this->vsopCode[this->location] == '\\')
             {
-                while (this->vsopCode[this->location+1] == '\\'){
-                    tokenValue += char2hex('\\');
-                    advance();
-                }
-
-                // It is an error if a string contains an invalid escape sequence
-                if(this->vsopCode[this->location+1] != 'b' && this->vsopCode[this->location+1] != 't' && this->vsopCode[this->location+1] != 'n' && this->vsopCode[this->location+1] != 'r' && this->vsopCode[this->location+1] != '"' && this->vsopCode[this->location+1] != '\\' && this->vsopCode[this->location+1] != 'x' && this->vsopCode[this->location+1] != '\n')
+                //  Escape sequence part //
+                if (this->location + 1 < this->vsopCode.length())
                 {
-                    // throw std::runtime_error("Invalid escape sequence after backslash.");
-                    print_error(this->line, this->column, "unknown-escape-sequence");
-                }
-
-                // Skip all leading whitespace on the next line
-                while (std::isspace(this->vsopCode[this->location+1]))
-                {
-                    if(this->vsopCode[this->location+1] == '\n' && this->vsopCode[this->location] != '\\'){
-                        // It is an error if a string literal contains a raw line feed
-                        // throw std::runtime_error("Raw line feed in string literal.");
-                        print_error(this->line, this->column, "invalid-lf-in-string");
-                    }
-                    advance();
-                }
-
-                if (this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 'b' && this->vsopCode[this->location] == '\\')
-                {
-                    tokenValue += char2hex('\b');
-                    advance();
-                }
-                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 't' && this->vsopCode[this->location] == '\\'){
-                    tokenValue += char2hex('\t');
-                    advance();
-                }
-                else if (this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 'n' && this->vsopCode[this->location] == '\\')
-                {
-                    if(this->vsopCode[this->location+2] == '\n' && this->vsopCode[this->location+1] != '\\'){
-                        // \n inserted before end of line instead of \ only
-                        // throw std::runtime_error("Backslash n inserted before end of line !");
-                        print_error(this->line, this->column, "invalid-lf-in-string");
-                    }
-                    tokenValue += char2hex('\n');
-                    advance();
-                }
-                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 'r' && this->vsopCode[this->location] == '\\'){
-                    tokenValue += char2hex('\r');
-                    advance();
-                }
-                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == '"' && this->vsopCode[this->location] == '\\'){
-                    // throw std::runtime_error("Incorrect Use of Quotes");
-                    // \" double-quote (not ending the string)
-                    tokenValue += char2hex('\"');
-                    advance();
-                }
-                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == '\\' && this->vsopCode[this->location] == '\\'){
-                    tokenValue += char2hex('\\');
-                    advance();
-                }
-                else if(this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 'x' && this->vsopCode[this->location] == '\\'){
-                    if(std::isxdigit(this->vsopCode[this->location+2]) && std::isxdigit(this->vsopCode[this->location+3])){
-                        tokenValue += char2hex(std::stoi(this->vsopCode.substr(this->location+2, 2), nullptr, 16));
-                        advance();
-                        advance();
-                        advance();
-                    }
-                    else
+                    switch (this->vsopCode[this->location + 1])
                     {
-                        // throw std::runtime_error("Invalid hexadecimal character byte sequence.");
-                        print_error(this->line, this->column, "wrong-hex-number");
+                    case 'b':
+                        tokenValue += char2hex('\b');
+                        advance();
+                        break;
+                    case 't':
+                        tokenValue += char2hex('\t');
+                        advance();
+                        break;
+                    case 'n':
+                        tokenValue += char2hex('\n');
+                        advance();
+                        break;
+                    case 'r':
+                        tokenValue += char2hex('\r');
+                        advance();
+                        break;
+                    case '"':
+                        if (this->location + 3 >= this->vsopCode.length())
+                        {
+                            advance();
+                            advance();
+                            print_error(this->line, this->column, "character '\\n' is illegal in this context.");
+                            return {Tokens::Token::TClass::NOT_A_TOKEN, tokenValue, startLine, startColumn};
+                        }
+                        tokenValue += "\\x22";
+                        advance();
+                        break;
+                    case '\\':
+                        tokenValue += "\\x5c";
+                        advance();
+                        break;
+                    case '\n':
+                        advance();
+                        while (this->location < this->vsopCode.length() && (isspace(this->vsopCode[this->location])))
+                        {
+                            if (this->vsopCode[this->location] == '\n' || isspace(this->vsopCode[this->location]))
+                            {
+                                advance();
+                            }
+                        }
+                        tokenValue += this->vsopCode[this->location];
+                        break;
+                    case 'x':
+                        if ((this->location + 3 < this->vsopCode.length()) && (!isxdigit(this->vsopCode[this->location + 2]) || !isxdigit(this->vsopCode[this->location + 3])))
+                        {
+                            print_error(this->line, this->column, "\\x is not a valid escape sequence.");
+                            advance();
+                            advance();
+                            advance();
+                            if (!isxdigit(this->vsopCode[this->location + 3]))
+                            {
+                                advance();
+                            }
+                            return {Tokens::Token::TClass::NOT_A_TOKEN, tokenValue, startLine, startColumn};
+                        }
+
+                        tokenValue += "\\x";
+                        advance();
+                        break;
+                    default:
+                        if (isspace(this->vsopCode[this->location + 1]))
+                        {
+                            print_error(this->line, this->column, "backslash and newline separated by space");
+                        }
+                        else
+                        {
+                            print_error(this->line, this->column, "Invalid escape sequence");
+                        }
+
+                        break;
                     }
                 }
+
                 advance();
             }
+            // non-escape
             else
             {
-                if(this->vsopCode[this->location+1] == '\n' && this->vsopCode[this->location] != '\\'){
-                    // It is an error if a string literal contains a raw line feed
-                    // throw std::runtime_error("Raw line feed in string literal Fuck.");
-                    print_error(this->line, this->column, "invalid-lf-in-string");
+                if (!(this->location + 1 >= this->vsopCode.length()))
+                {
+                    if (this->vsopCode[this->location] == '\n')
+                    {
+                        startLine = this->line;
+                        startColumn = this->column;
+                        print_error(startLine, startColumn, "character '\\n' is illegal in this context.");
+                        while ((!(this->location >= this->vsopCode.length()) && this->vsopCode[this->location] != '"'))
+                        {
+                            advance();
+                        }
+                        advance();
+                        return {Tokens::Token::TClass::NOT_A_TOKEN, tokenValue, startLine, startColumn};
+                    }
                 }
 
-                if(this->vsopCode[this->location]=='\\'){
-                    tokenValue += char2hex('\\');
-                }
-                else{
-                    tokenValue += this->vsopCode[this->location];
-                    advance();
-                }
+                tokenValue += this->vsopCode[this->location];
+                advance();
             }
         }
+
+        // unclosing quote part //
         if (this->location >= this->vsopCode.length() || this->vsopCode[this->location] != '"')
         {
-            // throw std::runtime_error("Unterminated string literal.");
-            print_error(startLine, startColumn, "unterminated-string");
+            removeMultipleSpaces(tokenValue);
+            print_error(startLine, startColumn, "Unterminated string literal.");
+            return {Tokens::Token::TClass::NOT_A_TOKEN, tokenValue, startLine, startColumn};
         }
+        // closing quote part //
         tokenValue += '"'; // Add the closing quote
-        advance(); // Skip the closing quote
-    
+        advance();         // Skip the closing quote
+        removeMultipleSpaces(tokenValue);
+
         return {Tokens::Token::TClass::STRING_LITERAL, tokenValue, startLine, startColumn};
     }
 
@@ -562,8 +594,9 @@ namespace Compilers::LexicalAnalyzers
         }
     }
 
-    void LexicalAnalyzer::print_error(size_t line, size_t column, const string &lexicalErrorDescription) const
+    void LexicalAnalyzer::print_error(size_t line, size_t column, const string &lexicalErrorDescription)
     {
-        cerr << this->vsopFileName << ":" << line << ":" << column << " lexical error: " << lexicalErrorDescription << endl;
+        this->opSucces = 1;
+        cerr << this->vsopFileName << ":" << line << ":" << column << ": lexical error: " << lexicalErrorDescription << endl;
     }
 }

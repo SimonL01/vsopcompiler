@@ -5,7 +5,6 @@
 
 #include "Compiler.hpp"
 
-
 using Compilers::Compiler;
 using std::cout;
 using std::endl;
@@ -14,21 +13,35 @@ using std::map;
 using std::string;
 using std::unique_ptr;
 
+/**
+ * Enumeration representing the mode of operation.
+ */
 enum class Mode
 {
-    LEX,
-    PARSE
+    LEX,  /**< Lexical analysis mode. */
+    PARSE /**< Parsing mode. */
 };
 
+/**
+ * Map to associate command line flags with modes.
+ */
 static const map<string, Mode> flagToMode = {
     {"-l", Mode::LEX},
     {"-p", Mode::PARSE}};
 
+/**
+ * Main function for the compiler program.
+ *
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line arguments.
+ * @return EXIT_SUCCESS if compilation succeeds, EXIT_FAILURE otherwise.
+ */
 int main(int argc, char const *argv[])
 {
-    Mode mode;
-    string sourceFile;
+    Mode mode;         // Mode of operation
+    string sourceFile; // Source file name
 
+    // Parse command-line arguments
     if (argc == 2)
     {
         mode = Mode::PARSE;
@@ -50,16 +63,17 @@ int main(int argc, char const *argv[])
         return EXIT_FAILURE;
     }
 
+    // Create compiler instance
     unique_ptr<Compiler> compiler = make_unique<Compiler>(sourceFile);
 
-    int opSucces;
+    // Perform compilation based on selected mode
+    int opSuccess;
     switch (mode)
     {
     case Mode::LEX:
-        opSucces = compiler->lex();
-        if (opSucces == 0)
+        opSuccess = compiler->lex();
+        if (opSuccess == 0)
         {
-            // print the value
             return EXIT_SUCCESS;
         }
         else
@@ -68,17 +82,18 @@ int main(int argc, char const *argv[])
         }
 
     case Mode::PARSE:
-        opSucces = compiler->parse();
-        if (opSucces == 0)
+        opSuccess = compiler->parse();
+        if (opSuccess == 0)
         {
-            // print the value
             return EXIT_SUCCESS;
         }
         else
         {
             return EXIT_FAILURE;
         }
+
     default:
+        cout << "Unknown mode." << endl;
         return EXIT_FAILURE;
     }
 }
