@@ -214,23 +214,41 @@ namespace Compilers::LexicalAnalyzers
         if(this->vsopCode[this->location] == '"'){
             tokenValue += '"';   
         }
+        if(this->vsopCode[this->location] == '"' && this->vsopCode[this->location+1] == '"'){
+            // empty string
+            throw std::runtime_error("empty string : unspecified behavior");
+        }
         advance(); // Skip the opening quote
 
 
         while (this->location < this->vsopCode.length() && this->vsopCode[this->location] != '"')
         {
+            if(this->vsopCode[this->location] == '\\' && this->vsopCode[this->location+1] == '"' && this->vsopCode[this->location+2] == '\n'){
+                // It is an error if trying to format as such \" at the end of a line
+                throw std::runtime_error("Unterminated string literal");
+            }
+
             // Si le character est \\, alors je vérifie la suite en essayant de respecter les guidelines
             if (this->vsopCode[this->location] == '\\') // \\ is an escape sequence for a SINGLE backslash
             {
+                while (this->vsopCode[this->location+1] == '\\'){
+                    tokenValue += '\\';
+                    advance();
+                }
+
                 // It is an error if a string contains an invalid escape sequence
                 if(this->vsopCode[this->location+1] != 'b' && this->vsopCode[this->location+1] != 't' && this->vsopCode[this->location+1] != 'n' && this->vsopCode[this->location+1] != 'r' && this->vsopCode[this->location+1] != '"' && this->vsopCode[this->location+1] != '\\' && this->vsopCode[this->location+1] != 'x' && this->vsopCode[this->location+1] != '\n')
                 {
-                    throw std::runtime_error("Invalid escape sequence.");
+                    throw std::runtime_error("Invalid escape sequence after backslash.");
                 }
 
                 // Skip all leading whitespace on the next line
                 while (std::isspace(this->vsopCode[this->location+1]))
                 {
+                    if(this->vsopCode[this->location+1] == '\n' && this->vsopCode[this->location] != '\\'){
+                        // It is an error if a string literal contains a raw line feed
+                        throw std::runtime_error("Raw line feed in string literal.");
+                    }
                     advance();
                 }
 
@@ -245,6 +263,10 @@ namespace Compilers::LexicalAnalyzers
                 }
                 else if (this->location+1 < this->vsopCode.length() && this->vsopCode[this->location+1] == 'n' && this->vsopCode[this->location] == '\\')
                 {
+                    if(this->vsopCode[this->location+2] == '\n' && this->vsopCode[this->location+1] != '\\'){
+                        // \n inserted before end of line instead of \ only
+                        throw std::runtime_error("Backslash n inserted before end of line !");
+                    }
                     tokenValue += char2hex('\n');
                     advance();
                 }
@@ -274,19 +296,17 @@ namespace Compilers::LexicalAnalyzers
                         throw std::runtime_error("Invalid hexadecimal character byte sequence.");
                     }
                 }
-                else
-                {   
-                    if(this->vsopCode[this->location] == '\n'){
-                    throw std::runtime_error("Backslash not followed by end of line.");
-                    }
-                }
                 advance();
             }
             else
             {
-                if(this->vsopCode[this->location] != '\n' && this->vsopCode[this->location-1] == '\\'){
-                    // raw line feed error
-                    throw std::runtime_error("Raw line feed in string literal.");
+                if(this->vsopCode[this->location+1] == '\n' && this->vsopCode[this->location] != '\\'){
+                    
+                    // print position, this->line, this->column
+                    cout << "Position +1: " << this->vsopCode[this->location+1] << " Position: " << this->vsopCode[this->location] << " Column: " << this->column << endl;
+
+                    // It is an error if a string literal contains a raw line feed
+                    throw std::runtime_error("Raw line feed in string literal Fuck.");
                 }
                 tokenValue += this->vsopCode[this->location];
                 advance();
