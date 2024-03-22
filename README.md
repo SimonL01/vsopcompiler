@@ -5,6 +5,10 @@ INFO0085 - Compilers - VSOP Compiler Project
 
 ![Local Image](images/structure-of-a-compiler.png)
 
+# Table of Contents
+1. [Lexical Analysis](#Lexical-Analysis)
+2. [Syntax Analysis](#Syntax-Analysis)
+
 ## Lexical Analysis
 ### Theory
 Also known as Scanning \
