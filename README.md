@@ -15,7 +15,7 @@ It simplifies the syntax analysis by reducing the complexity of the source code 
 ### Theory
 Input : Character Stream
 Output : Token Stream
-- [ -> ]
+- [ ] Lexical analyzer groups
 
 ## Syntax Analysis
 ### Role
