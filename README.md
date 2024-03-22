@@ -7,9 +7,7 @@ INFO0085 - Compilers - VSOP Compiler Project
 
 # Table of Contents
 1. [Lexical Analysis](#Lexical-Analysis)
-    1.1 [Theory](#Theory-lexical)
 2. [Syntax Analysis](#Syntax-Analysis)
-    2.1 [Theory](#Theory-syntax)
 
 ## Lexical Analysis
 ### Theory
