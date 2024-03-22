@@ -9,7 +9,7 @@ INFO0085 - Compilers - VSOP Compiler Project
 ### Theory
 Also known as Scanning \
 Input : Character Stream \
-Output : Token Stream \
+Output : Token Stream
 - [ ] Lexical analyzer groups characters into meaningful sequences called lexemes
 -> E.g. string "position = initial + rate * 60;" is split into seven lexemes : position, =, initial, +, rate, *, 60, ;
 -> Scanning ignores non-significant blanks and comments
@@ -25,31 +25,31 @@ Output : Token Stream \
 | ... | ... | ... |
 
 - [ ] Each token is defined by a regular expression
--> Example :
-    < letter > ::= A-Z | a-z
-    < digit > ::= 0-9
+-> Example : \
+    < letter > ::= A-Z | a-z \
+    < digit > ::= 0-9 \
     < identifier > ::= < letter > ( < letter > | < digit >)*
 
 - [ ] Lexical analysis is implemented by 
-    [1] building a non deterministic finite automaton from all token regular expressions
-    [2] eliminating non determinism, building a deterministic finite automaton
-    [3] simplifying the automaton, building a minimal (a.k.a. canonical) deterministic finite automaton
+    1. building a non deterministic finite automaton from all token regular expressions
+    2. eliminating non determinism, building a deterministic finite automaton
+    3. simplifying the automaton, building a minimal (a.k.a. canonical) deterministic finite automaton
 
 - [ ] There exist software to easily build lexical analyzers from regular expressions (Examples ; lex, flex, ...)
 
 ## Syntax Analysis
 ### Theory
-Also known as Parsing.
-Input : Token Stream
+Also known as Parsing \
+Input : Token Stream \
 Output : Syntax Tree
 - [ ] Parsing groups of tokens into grammatical phrases.
 - [ ] The result is represented in a parse tree, i.e. a tree-like representation of the grammatical structure of the token stream.
 - [ ] Example :
-    -> Grammar for assignment statement :
-    < assignment > ::= id = < expression >
-    < expression > ::= num | id | < expression > + < expression >
+    -> Grammar for assignment statement : \
+    < assignment > ::= id = < expression > \
+    < expression > ::= num | id | < expression > + < expression > \
     ![Local Image](images/syntax-analysis-ast-not-simplified.PNG)
-- [ ] The parse tree is often simplified into a (abstract) syntax tree
+- [ ] The parse tree is often simplified into a (abstract) syntax tree \
     ![Local Image](images/syntax-analysis-ast.PNG)
 - [ ] This tree is used as a base structure for all subsequent phases
 - [ ] Actually, internally, the tree is rather a datastructure that can be visited recursively
@@ -58,5 +58,5 @@ Output : Syntax Tree
     -> Parse and syntax trees constructed by building automatically a (kind of) pushdown automaton from the grammar
     -> Typically, these algorithms only work for a (large) subclass of context-free grammars
 
-- [ ] Result :
+- [ ] Result : \
     ![Local Image](images/syntax-analysis-result.PNG)
