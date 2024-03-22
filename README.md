@@ -7,7 +7,7 @@ INFO0085 - Compilers - VSOP Compiler Project
 
 ## Lexical Analysis
 ### Theory
-Also known as Scanning.
+Also known as Scanning \
 Input : Character Stream
 Output : Token Stream
 - [ ] Lexical analyzer groups characters into meaningful sequences called lexemes
