@@ -7,7 +7,7 @@ INFO0085 - Compilers - VSOP Compiler Project
 
 ## Lexical Analysis
 ### Role
-Transdorms the source code into a stream of tokens
+Transforms the source code into a stream of tokens
 ### How does it work ?
 It reads the characters of the source code and groups them into meaningful sequences called tokens.
 Tokens can be keywords, identifiers, literals, operators, etc.
