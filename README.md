@@ -8,8 +8,8 @@ INFO0085 - Compilers - VSOP Compiler Project
 ## Lexical Analysis
 ### Theory
 Also known as Scanning \
-Input : Character Stream
-Output : Token Stream
+Input : Character Stream \
+Output : Token Stream \
 - [ ] Lexical analyzer groups characters into meaningful sequences called lexemes
 -> E.g. string "position = initial + rate * 60;" is split into seven lexemes : position, =, initial, +, rate, *, 60, ;
 -> Scanning ignores non-significant blanks and comments
