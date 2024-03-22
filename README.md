@@ -10,7 +10,6 @@ INFO0085 - Compilers - VSOP Compiler Project
 2. [Syntax Analysis](#Syntax-Analysis)
 
 ## Lexical Analysis
-### Theory
 Also known as Scanning \
 Input : Character Stream \
 Output : Token Stream
@@ -19,7 +18,7 @@ Output : Token Stream
 -> Scanning ignores non-significant blanks and comments
 - [ ] For each lexeme, the lexical analyzer produces as output a token, that is, a pair of the form (token-name, attribute-value)
 -> The produced tokens for above string are
-(id, 1), (op, =), (id, 2), (op, +), (id, 3), (op, *), (num, 60), (sep, \;) with the symbol table (in modern compilers, the table is not built anymore during lexical analysis) :
+(id, 1), (op, =), (id, 2), (op, +), (id, 3), (op, *), (num, 60), (sep, \;) with the symbol table, dictionary structure (in modern compilers, the table is not built anymore during lexical analysis but in a separate phase) :
 
 | Symbol | Attribute Value              | ... |
 |-----------|-------------------|-------------------------------------|
@@ -42,7 +41,6 @@ Output : Token Stream
 - [ ] There exist software to easily build lexical analyzers from regular expressions (Examples ; lex, flex, ...)
 
 ## Syntax Analysis
-### Theory
 Also known as Parsing \
 Input : Token Stream \
 Output : Syntax Tree
