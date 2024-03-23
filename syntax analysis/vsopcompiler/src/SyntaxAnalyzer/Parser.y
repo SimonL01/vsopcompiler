@@ -1,4 +1,8 @@
-//This code was inspired from the flex/bison example provided by the teacher and the assistant
+/* This code was inspired from
+ * the parser.y provided by 
+ * the teacher and the assistant
+ * as an example of a calculator program
+ */
 
 %skeleton "lalr1.cc" // -*- C++ -*-
 %language "c++"
