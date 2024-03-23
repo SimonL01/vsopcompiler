@@ -24,10 +24,10 @@
 
 // Tokens contain their type, value and location
 // Also allow to use the make_TOKEN functions
-%define api.token.constructor                           //it needs apivaluetype so remove too
+%define api.token.constructor
 
 // Allow to use C++ objects as semantic values
-%define api.value.type variant               //remove this to use a union
+%define api.value.type variant
 
 // Add some assertions.
 %define parse.assert
