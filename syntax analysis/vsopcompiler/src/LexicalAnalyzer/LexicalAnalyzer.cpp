@@ -138,9 +138,12 @@ namespace Compilers::LexicalAnalyzers
         do
         {
             token = get_next_token();
-            if (token.get_tokenClass() != Tokens::Token::TClass::NOT_A_TOKEN)
+            if (this->get_opSucces() == 0)
             {
-                tokens.push_back(token);
+                if (token.get_tokenClass() != Tokens::Token::TClass::NOT_A_TOKEN)
+                {
+                    tokens.push_back(token);
+                }
             }
         } while (token.get_tokenClass() != Tokens::Token::TClass::END_OF_FILE);
     }

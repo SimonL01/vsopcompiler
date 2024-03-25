@@ -140,4 +140,14 @@ namespace Compilers::Tokens
         }
     }
 
+    size_t Token::get_line() const
+    {
+        return this->line;
+    }
+
+    size_t Token::get_column() const
+    {
+        return this->column;
+    }
+
 }

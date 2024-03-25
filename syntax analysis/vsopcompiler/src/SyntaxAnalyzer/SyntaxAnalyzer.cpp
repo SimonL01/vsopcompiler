@@ -15,10 +15,18 @@ using std::pair;
 using std::string;
 using std::unique_ptr;
 using std::vector;
-// using Compilers::Parsers::Parser;
+
+
 
 namespace Compilers::Parsers
 {
+    string FILE_NAME;
+
+    static void init_filename(SyntaxAnalyzer &synAnalysis)
+    {
+        FILE_NAME = synAnalysis.get_filename();
+    }
+
     Parser::symbol_type yylex(SyntaxAnalyzer &synAnalysis)
     {
         return synAnalysis.YYlex();
@@ -114,7 +122,6 @@ namespace Compilers::Parsers
             return Parser::make_ASSIGN("<-", loc);
         default:
             return Parser::make_YYUNDEF(loc);
-            // throw std::invalid_argument("Token non pris en charge");
         }
     }
 
@@ -125,17 +132,39 @@ namespace Compilers::Parsers
     Parser::symbol_type SyntaxAnalyzer::YYlex()
     {
         Tokens::Token token = this->lexAnalysis->get_next_token();
-        //position::filename_type fileName = this->lexAnalysis->get_file_name();
-        //position::counter_type line = static_cast<int>(this->lexAnalysis->get_line());
-        //position::counter_type column = static_cast<int>(this->lexAnalysis->get_column());
-        Parser::symbol_type pToken = convertLexTokenToParseToken(token, location());
 
+        /* token position definition */
+        position posBegin;
+        position posEnd;
+        position::filename_type fileName = *make_unique<string>(this->lexAnalysis->get_file_name());
+        position::counter_type line = token.get_line();
+        position::counter_type column = token.get_column();
+
+        posBegin.filename = &fileName;
+        posBegin.line = line;
+        posBegin.column = column;
+
+        posEnd.filename = &fileName;
+        posEnd.line = posBegin.line + token.get_tokenValue().length();
+        posEnd.column = posBegin.column;
+
+        /* token location definition */
+        Parser::location_type loc = location(posBegin, posEnd);
+        
+
+        Parser::symbol_type pToken = convertLexTokenToParseToken(token, loc);
         return pToken;
+    }
+
+    std::string SyntaxAnalyzer::get_filename()
+    {
+        return this->lexAnalysis->get_file_name();
     }
 
     int SyntaxAnalyzer::parse()
     {
         std::unique_ptr<Compilers::Parsers::Parser> parser = make_unique<Parser>(*this);
+        init_filename(*this);
         int opSucces = parser->parse();
 
         if (opSucces == 0)

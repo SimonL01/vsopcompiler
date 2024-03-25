@@ -49,7 +49,7 @@ $(TARGET): $(MAIN_OBJS) $(LEXICALANALYZER_OBJS) $(TOKEN_OBJS) $(SYNTAXANALYZER_O
 
 # Build Parser files
 $(SRCDIR)/SyntaxAnalyzer/Parser.cpp:  $(PARSER_SRCS)
-	$(BISON) $(BISONFLAGS) $^ -o $@
+	$(BISON) $(BISONFLAGS) $^ -o $@ -Wcounterexamples
 
 # Build main objects
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(MAIN_DEPS)
@@ -87,9 +87,14 @@ vsopc:
 	make
 	cp $(TARGET)  .
 
-all:
+parse:
+	clear
+	make clean
 	make vsopc
-	./bin/vsopc -l exemple.vsop
+	./bin/vsopc -p exemple.vsop
+
+do:
+	./bin/vsopc -p exemple.vsop
 
 install-tools:
 

@@ -4,7 +4,7 @@
 #include "Compiler.hpp"
 #include "./Token/Token.hpp"
 
-// #define ABSOLUTE_PATH "./srcFile/"
+//#define ABSOLUTE_PATH "./srcFile/"
 #define ABSOLUTE_PATH "./"
 
 using Compilers::LexicalAnalyzers::LexicalAnalyzer;
@@ -47,13 +47,12 @@ namespace Compilers
     {
         this->lexAnalysis->tokenize();
         vector<Tokens::Token> tokens = this->lexAnalysis->get_tokens();
-        if (this->lexAnalysis->get_opSucces() == 0)
+
+        for (const Tokens::Token &token : tokens)
         {
-            for (const Tokens::Token &token : tokens)
-            {
-                token.print_token();
-            }
+            token.print_token();
         }
+
         return this->lexAnalysis->get_opSucces();
     }
 

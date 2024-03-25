@@ -108,6 +108,10 @@ namespace Compilers::Tokens
          */
         void print_token() const;
 
+        size_t get_line() const;
+
+        size_t get_column() const;
+
     protected:
         TClass tokenClass;      /**< Class of the token. */
         std::string tokenValue; /**< Value of the token (if applicable). */

@@ -4,6 +4,9 @@
 
 using std::make_unique;
 using std::unique_ptr;
+using std::string;
+using std::cout;
+using std::endl;
 
 /************************************/
 /*         Vistor interface         */
@@ -23,13 +26,13 @@ Expr<T>::~Expr()
 /************************************/
 
 template <typename T>
-Type<T>::Type(const std::string type) : type(type) {}
+Type<T>::Type(const string type) : type(type) {}
 
 template <typename T>
 auto Type<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string Type<T>::getType() { return this->type; }
+const string Type<T>::get_type() { return this->type; }
 
 template <typename T>
 Type<T>::~Type() {}
@@ -39,16 +42,16 @@ Type<T>::~Type() {}
 /************************************/
 
 template <typename T>
-Formal<T>::Formal(const std::string name, Type<T> type) : name(name), type(type) {}
+Formal<T>::Formal(const string name, Type<T> type) : name(name), type(type) {}
 
 template <typename T>
 auto Formal<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string Formal<T>::getName() { return this->name; }
+const string Formal<T>::get_name() { return this->name; }
 
 template <typename T>
-Type<T> Formal<T>::getType() { return this->type; }
+Type<T> Formal<T>::get_type() { return this->type; }
 
 template <typename T>
 Formal<T>::~Formal() {}
@@ -58,22 +61,22 @@ Formal<T>::~Formal() {}
 /************************************/
 
 template <typename T>
-Block<T>::Block(std::vector<Expr<T> *> *expr_list) : expr_list(expr_list) {}
+Block<T>::Block(std::vector<Expr<T> *> *blockExrps) : blockExrps(blockExrps) {}
 
 template <typename T>
 auto Block<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-std::vector<Expr<T> *> *Block<T>::getExpr_list() { return this->expr_list; }
+std::vector<Expr<T> *> *Block<T>::get_blockExrps() { return this->blockExrps; }
 
 template <typename T>
-void Block<T>::AddExpr(Expr<T> *e) { expr_list->push_back(e); }
+void Block<T>::Add_expr(Expr<T> *expr) { blockExrps->push_back(expr); }
 
 template <typename T>
 Block<T>::~Block()
 {
-    for (auto b : *expr_list)
-        delete b;
+    for (auto block : *blockExrps)
+        delete block;
 }
 
 /************************************/
@@ -105,24 +108,24 @@ Conditional<T>::~Conditional()
 }
 
 /************************************/
-/*           While class            */
+/*           WhileLoop class            */
 /************************************/
 
 template <typename T>
-While<T>::While(Expr<T> *cond_expr, Expr<T> *body_expr)
+WhileLoop<T>::WhileLoop(Expr<T> *cond_expr, Expr<T> *body_expr)
     : cond_expr(cond_expr), body_expr(body_expr) {}
 
 template <typename T>
-auto While<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
+auto WhileLoop<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-Expr<T> *While<T>::getCond_expr() { return this->cond_expr; }
+Expr<T> *WhileLoop<T>::getCond_expr() { return this->cond_expr; }
 
 template <typename T>
-Expr<T> *While<T>::getBody_expr() { return this->body_expr; }
+Expr<T> *WhileLoop<T>::getBody_expr() { return this->body_expr; }
 
 template <typename T>
-While<T>::~While()
+WhileLoop<T>::~WhileLoop()
 {
     delete cond_expr;
     delete body_expr;
@@ -133,17 +136,17 @@ While<T>::~While()
 /************************************/
 
 template <typename T>
-Let<T>::Let(const std::string name, Type<T> type, Expr<T> *scope_expr, Expr<T> *init_expr)
+Let<T>::Let(const string name, Type<T> type, Expr<T> *scope_expr, Expr<T> *init_expr)
     : name(name), type(type), init_expr(init_expr), scope_expr(scope_expr) {}
 
 template <typename T>
 auto Let<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string Let<T>::getName() { return this->name; }
+const string Let<T>::get_name() { return this->name; }
 
 template <typename T>
-Type<T> Let<T>::getType() { return this->type; }
+Type<T> Let<T>::get_type() { return this->type; }
 
 template <typename T>
 Expr<T> *Let<T>::getInit_expr() { return this->init_expr; }
@@ -163,13 +166,13 @@ Let<T>::~Let()
 /************************************/
 
 template <typename T>
-Assign<T>::Assign(const std::string name, Expr<T> *expr) : name(name), expr(expr) {}
+Assign<T>::Assign(const string name, Expr<T> *expr) : name(name), expr(expr) {}
 
 template <typename T>
 auto Assign<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string Assign<T>::getName() { return this->name; }
+const string Assign<T>::get_name() { return this->name; }
 
 template <typename T>
 Expr<T> *Assign<T>::getExpr() { return this->expr; }
@@ -185,13 +188,13 @@ Assign<T>::~Assign()
 /************************************/
 
 template <typename T>
-UnOp<T>::UnOp(const std::string op, Expr<T> *expr) : op(op), expr(expr) {}
+UnOp<T>::UnOp(const string op, Expr<T> *expr) : op(op), expr(expr) {}
 
 template <typename T>
 auto UnOp<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string UnOp<T>::getOp() { return this->op; }
+const string UnOp<T>::getOp() { return this->op; }
 
 template <typename T>
 Expr<T> *UnOp<T>::getExpr() { return this->expr; }
@@ -207,13 +210,13 @@ UnOp<T>::~UnOp()
 /************************************/
 
 template <typename T>
-BinOp<T>::BinOp(const std::string op, Expr<T> *left_expr, Expr<T> *right_expr) : op(op), left_expr(left_expr), right_expr(right_expr) {}
+BinOp<T>::BinOp(const string op, Expr<T> *left_expr, Expr<T> *right_expr) : op(op), left_expr(left_expr), right_expr(right_expr) {}
 
 template <typename T>
 auto BinOp<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string BinOp<T>::getOp() { return this->op; }
+const string BinOp<T>::getOp() { return this->op; }
 
 template <typename T>
 Expr<T> *BinOp<T>::getLeft_expr() { return this->left_expr; }
@@ -233,14 +236,14 @@ BinOp<T>::~BinOp()
 /************************************/
 
 template <typename T>
-Call<T>::Call(const std::string method_name, std::vector<Expr<T> *> *expr_list, Expr<T> *obj_expr)
+Call<T>::Call(const string method_name, std::vector<Expr<T> *> *expr_list, Expr<T> *obj_expr)
     : obj_expr(obj_expr), method_name(method_name), expr_list(expr_list) {}
 
 template <typename T>
 auto Call<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string Call<T>::getMethod_name() { return this->method_name; }
+const string Call<T>::getMethod_name() { return this->method_name; }
 
 template <typename T>
 Expr<T> *Call<T>::getObj_expr() { return this->obj_expr; }
@@ -249,7 +252,7 @@ template <typename T>
 std::vector<Expr<T> *> *Call<T>::getExpr_list() { return this->expr_list; }
 
 template <typename T>
-void Call<T>::AddExpr(Expr<T> *e) { expr_list->push_back(e); }
+void Call<T>::Add_expr(Expr<T> *expr) { expr_list->push_back(expr); }
 
 template <typename T>
 Call<T>::~Call()
@@ -264,13 +267,13 @@ Call<T>::~Call()
 /************************************/
 
 template <typename T>
-New<T>::New(const std::string type_name) : type_name(type_name) {}
+New<T>::New(const string type_name) : type_name(type_name) {}
 
 template <typename T>
 auto New<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string New<T>::getType_name() { return this->type_name; }
+const string New<T>::get_type_name() { return this->type_name; }
 
 template <typename T>
 New<T>::~New() {}
@@ -280,13 +283,13 @@ New<T>::~New() {}
 /************************************/
 
 template <typename T>
-ObjectIdentifier<T>::ObjectIdentifier(const std::string name) : name(name) {}
+ObjectIdentifier<T>::ObjectIdentifier(const string name) : name(name) {}
 
 template <typename T>
 auto ObjectIdentifier<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string ObjectIdentifier<T>::getName() { return this->name; }
+const string ObjectIdentifier<T>::get_name() { return this->name; }
 
 template <typename T>
 ObjectIdentifier<T>::~ObjectIdentifier() {}
@@ -296,13 +299,13 @@ ObjectIdentifier<T>::~ObjectIdentifier() {}
 /************************************/
 
 template <typename T>
-Self<T>::Self(const std::string self) : self(self) {}
+Self<T>::Self(const string self) : self(self) {}
 
 template <typename T>
 auto Self<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string Self<T>::getSelf() { return this->self; }
+const string Self<T>::getSelf() { return this->self; }
 
 template <typename T>
 Self<T>::~Self() {}
@@ -341,13 +344,13 @@ IntegerLiteral<T>::~IntegerLiteral() {}
 /************************************/
 
 template <typename T>
-StringLiteral<T>::StringLiteral(const std::string stringVal) : stringVal(stringVal) {}
+StringLiteral<T>::StringLiteral(const string str) : str(str) {}
 
 template <typename T>
 auto StringLiteral<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string StringLiteral<T>::getStringVal() { return stringVal; }
+const string StringLiteral<T>::get_str() { return str; }
 
 template <typename T>
 StringLiteral<T>::~StringLiteral() {}
@@ -357,13 +360,13 @@ StringLiteral<T>::~StringLiteral() {}
 /************************************/
 
 template <typename T>
-BooleanLiteral<T>::BooleanLiteral(const std::string val) : val(val) {}
+BooleanLiteral<T>::BooleanLiteral(const string boolean) : boolean(boolean) {}
 
 template <typename T>
 auto BooleanLiteral<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string BooleanLiteral<T>::getVal() { return val; }
+const string BooleanLiteral<T>::get_bool() { return this->boolean; }
 
 template <typename T>
 BooleanLiteral<T>::~BooleanLiteral() {}
@@ -373,17 +376,17 @@ BooleanLiteral<T>::~BooleanLiteral() {}
 /************************************/
 
 template <typename T>
-Field<T>::Field(const std::string name, Type<T> type, Expr<T> *init_expr)
+Field<T>::Field(const string name, Type<T> type, Expr<T> *init_expr)
     : name(name), type(type), init_expr(init_expr) {}
 
 template <typename T>
 auto Field<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string Field<T>::getName() { return name; }
+const string Field<T>::get_name() { return name; }
 
 template <typename T>
-Type<T> Field<T>::getType() { return type; }
+Type<T> Field<T>::get_type() { return type; }
 
 template <typename T>
 Expr<T> *Field<T>::getInit_expr() { return init_expr; }
@@ -399,26 +402,26 @@ Field<T>::~Field()
 /************************************/
 
 template <typename T>
-Method<T>::Method(const std::string name, std::vector<Formal<T> *> *formals, Type<T> ret_type, Block<T> *block)
+Method<T>::Method(const string name, std::vector<Formal<T> *> *formals, Type<T> ret_type, Block<T> *block)
     : name(name), formals(formals), ret_type(ret_type), block(block) {}
 
 template <typename T>
 auto Method<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string Method<T>::getName() { return name; }
+const string Method<T>::get_name() { return name; }
 
 template <typename T>
-std::vector<Formal<T> *> *Method<T>::getFormals() { return formals; }
+std::vector<Formal<T> *> *Method<T>::get_formals() { return this->formals; }
 
 template <typename T>
-Type<T> Method<T>::getRet_type() { return ret_type; }
+Type<T> Method<T>::getRet_type() { return this->ret_type; }
 
 template <typename T>
-Block<T> *Method<T>::getBlock() { return block; }
+Block<T> *Method<T>::get_block() { return this->block; }
 
 template <typename T>
-void Method<T>::AddFormal(Formal<T> *f) { formals->push_back(f); }
+void Method<T>::add_formal(Formal<T> *formal) { formals->push_back(formal); }
 
 template <typename T>
 Method<T>::~Method()
@@ -433,42 +436,47 @@ Method<T>::~Method()
 /************************************/
 
 template <typename T>
-Class<T>::Class(const std::string name, std::vector<Method<T> *> *methods, std::vector<Field<T> *> *fields, const std::string parent)
-    : name(name), parent(parent), methods(methods), fields(fields) {}
+Class<T>::Class(const string name, const string parent, std::vector<Field<T> *> *fields, std::vector<Method<T> *> *methods)
+    : name(name), parent(parent), fields(fields), methods(methods) {}
 
 template <typename T>
 auto Class<T>::accept(Visitor<T> &v) -> T { return v.visit(*this); }
 
 template <typename T>
-const std::string Class<T>::getName() { return name; }
+const string Class<T>::get_name() { return name; }
 
 template <typename T>
-const std::string Class<T>::getParent() { return parent; }
-
-template <typename T>
-std::vector<Method<T> *> *Class<T>::getMethods() { return methods; }
+const string Class<T>::getParent() { return parent; }
 
 template <typename T>
 std::vector<Field<T> *> *Class<T>::getFields() { return fields; }
 
 template <typename T>
-void Class<T>::AddMethod(Method<T> *m) { methods->push_back(m); }
+std::vector<Method<T> *> *Class<T>::getMethods() { return methods; }
 
 template <typename T>
-void Class<T>::AddField(Field<T> *f) { fields->push_back(f); }
+void Class<T>::AddField(Field<T> *field) { fields->push_back(field); }
+
+template <typename T>
+void Class<T>::AddMethod(Method<T> *method) { methods->push_back(method); }
 
 template <typename T>
 Class<T>::~Class()
 {
-    for (auto m : *methods)
-        delete m;
-    for (auto f : *fields)
-        delete f;
+    for (auto method : *methods)
+        delete method;
+    for (auto field : *fields)
+        delete field;
 }
 
 /************************************/
 /*          Program class           */
 /************************************/
+
+//template <typename T>
+//Program<T>::Program()
+//{
+//}
 
 template <typename T>
 Program<T>::Program(std::vector<Class<T> *> *classes) : classes(classes) {}
@@ -499,112 +507,112 @@ PrintVisitor::PrintVisitor()
 
 void PrintVisitor::visit(Type<void> &type)
 {
-    std::cout << type.getType();
+    cout << type.get_type();
 }
 
 void PrintVisitor::visit(Formal<void> &formal)
 {
-    std::cout << formal.getName() << " : ";
-    formal.getType().accept(*this);
+    cout << formal.get_name() << " : ";
+    formal.get_type().accept(*this);
 }
 
 void PrintVisitor::visit(Block<void> &block)
 {
-    std::cout << "[";
-    if (!block.getExpr_list()->empty())
+    cout << "[";
+    if (!block.get_blockExrps()->empty())
     {
-        for (unsigned long i = 0; i < block.getExpr_list()->size(); i++)
+        for (unsigned long i = 0; i < block.get_blockExrps()->size(); i++)
         {
-            (*block.getExpr_list())[i]->accept(*this);
-            if (i == block.getExpr_list()->size() - 1)
+            (*block.get_blockExrps())[i]->accept(*this);
+            if (i == block.get_blockExrps()->size() - 1)
                 break;
-            std::cout << ", ";
+            cout << ", ";
         }
     }
-    std::cout << "]";
+    cout << "]";
 }
 
 void PrintVisitor::visit(Conditional<void> &conditional)
 {
-    std::cout << "If(";
-
+    cout << "If(";
     conditional.getCond_expr()->accept(*this);
-    std::cout << ", ";
+
+    cout << ", ";
 
     conditional.getThen_expr()->accept(*this);
 
     if (conditional.getElse_expr() != nullptr)
     {
-        std::cout << ", ";
+        cout << ", ";
         conditional.getElse_expr()->accept(*this);
     }
-    std::cout << ")";
+    cout << ")";
 }
 
-void PrintVisitor::visit(While<void> &while_)
+void PrintVisitor::visit(WhileLoop<void> &whileLoop)
 {
-    std::cout << "While(";
+    cout << "While(";
 
-    while_.getCond_expr()->accept(*this);
-    std::cout << ", ";
+    whileLoop.getCond_expr()->accept(*this);
+    cout << ", ";
 
-    while_.getBody_expr()->accept(*this);
-    std::cout << ")";
+    whileLoop.getBody_expr()->accept(*this);
+    cout << ")";
 }
 
 void PrintVisitor::visit(Let<void> &let)
 {
-    std::cout << "Let(" << let.getName() << ", ";
+    cout << "Let(" << let.get_name() << ", ";
 
-    let.getType().accept(*this);
-    std::cout << ", ";
+    let.get_type().accept(*this);
+    cout << ", ";
 
     if (let.getInit_expr() != nullptr)
     {
         let.getInit_expr()->accept(*this);
-        std::cout << ", ";
+        cout << ", ";
     }
 
     let.getScope_expr()->accept(*this);
-    std::cout << ")";
+    cout << ")";
 }
 
 void PrintVisitor::visit(Assign<void> &assign)
 {
-    std::cout << "Assign(" << assign.getName() << ", ";
+    cout << "Assign(" << assign.get_name() << ", ";
     assign.getExpr()->accept(*this);
-    std::cout << ")";
+    cout << ")";
 }
 
 void PrintVisitor::visit(UnOp<void> &unOp)
 {
-    std::cout << "UnOp(" << unOp.getOp() << ", ";
+    cout << "UnOp(" << unOp.getOp() << ", ";
     unOp.getExpr()->accept(*this);
-    std::cout << ")";
+    cout << ")";
 }
 
 void PrintVisitor::visit(BinOp<void> &binOp)
 {
-    std::cout << "BinOp(" << binOp.getOp() << ", ";
+    cout << "BinOp(" << binOp.getOp() << ", ";
     binOp.getLeft_expr()->accept(*this);
-    std::cout << ", ";
+    cout << ", ";
     binOp.getRight_expr()->accept(*this);
-    std::cout << ")";
+    cout << ")";
 }
 
 void PrintVisitor::visit(Call<void> &call)
 {
-    std::cout << "Call(";
+    cout << "Call(";
 
     if (call.getObj_expr() != nullptr)
         call.getObj_expr()->accept(*this);
 
     else
-        std::cout << "self";
+        cout << "self";
 
-    std::cout << ", " << call.getMethod_name() << ", ";
+    cout << ", " << call.getMethod_name() << ", ";
 
-    std::cout << "[";
+    cout << "[";
     if (!call.getExpr_list()->empty())
     {
         for (unsigned long i = 0; i < call.getExpr_list()->size(); i++)
@@ -613,101 +621,100 @@ void PrintVisitor::visit(Call<void> &call)
             if (i == call.getExpr_list()->size() - 1)
                 break;
             else
-                std::cout << ", ";
+                cout << ", ";
         }
     }
-    std::cout << "]";
-    std::cout << ")";
+    cout << "]";
+    cout << ")";
 }
 
 void PrintVisitor::visit(New<void> &new_)
 {
-    std::cout << "New(" << new_.getType_name() << ")";
+    cout << "New(" << new_.get_type_name() << ")";
 }
 
 void PrintVisitor::visit(ObjectIdentifier<void> &objectIdentifier)
 {
-    std::cout << objectIdentifier.getName();
+    cout << objectIdentifier.get_name();
 }
 void PrintVisitor::visit(Self<void> &self)
 {
-    std::cout << self.getSelf();
+    cout << self.getSelf();
 }
 
 void PrintVisitor::visit(Par<void> &par)
 {
     (void)par;
-    std::cout << "()";
+    cout << "()";
 }
 
 void PrintVisitor::visit(IntegerLiteral<void> &intergerLitteral)
 {
-    std::cout << intergerLitteral.getValue();
+    cout << intergerLitteral.getValue();
 }
 
 void PrintVisitor::visit(StringLiteral<void> &stringLitteral)
 {
-    //std::cout << "\"" << stringLitteral.getStringVal() << "\"";
-    std::cout << stringLitteral.getStringVal();
+    cout << stringLitteral.get_str();
 }
 
 void PrintVisitor::visit(BooleanLiteral<void> &booleanLitteral)
 {
-    std::cout << booleanLitteral.getVal();
+    cout << booleanLitteral.get_bool();
 }
 
 void PrintVisitor::visit(Field<void> &field)
 {
-    std::cout << "Field(" << field.getName() << ", ";
+    cout << "Field(" << field.get_name() << ", ";
 
-    field.getType().accept(*this);
+    field.get_type().accept(*this);
 
     if (field.getInit_expr() != nullptr)
     {
-        std::cout << ", ";
+        cout << ", ";
         field.getInit_expr()->accept(*this);
     }
 
-    std::cout << ")";
+    cout << ")";
 }
 
 void PrintVisitor::visit(Method<void> &method)
 {
-    std::cout << "Method(" << method.getName() << ", ";
+    cout << "Method(" << method.get_name() << ", ";
 
-    std::cout << "[";
-    if (!method.getFormals()->empty())
+    cout << "[";
+    if (!method.get_formals()->empty())
     {
-        for (unsigned long i = 0; i < method.getFormals()->size(); i++)
+        for (unsigned long i = 0; i < method.get_formals()->size(); i++)
         {
-            (*method.getFormals())[i]->accept(*this);
-            if (i == method.getFormals()->size() - 1)
-                std::cout << "], ";
+            (*method.get_formals())[i]->accept(*this);
+            if (i == method.get_formals()->size() - 1)
+                cout << "], ";
             else
-                std::cout << ", ";
+                cout << ", ";
         }
     }
     else
-        std::cout << "], ";
+        cout << "], ";
 
     method.getRet_type().accept(*this);
-    std::cout << ", ";
+    cout << ", ";
 
-    method.getBlock()->accept(*this);
+    method.get_block()->accept(*this);
 
-    std::cout << ")";
+    cout << ")";
 }
 
 void PrintVisitor::visit(Class<void> &class_)
 {
-    std::cout << "Class(" << class_.getName() << ", ";
+    cout << "Class(" << class_.get_name() << ", ";
 
     if (class_.getParent() != "")
-        std::cout << class_.getParent();
+        cout << class_.getParent();
     else
-        std::cout << "Object";
+        cout << "Object";
 
-    std::cout << ", [";
+    cout << ", [";
     if (!class_.getFields()->empty())
     {
         for (unsigned long i = 0; i < class_.getFields()->size(); i++)
@@ -716,47 +723,48 @@ void PrintVisitor::visit(Class<void> &class_)
             if (i == class_.getFields()->size() - 1)
                 break;
             else
-                std::cout << ", ";
+                cout << ", ";
         }
     }
-    std::cout << "],";
+    cout << "],";
 
     if (!class_.getMethods()->empty())
     {
-        std::cout << std::endl;
-        std::cout << "[";
+        cout << endl;
+        cout << "\t [";
         for (unsigned long i = 0; i < class_.getMethods()->size(); i++)
         {
             (*class_.getMethods())[i]->accept(*this);
             if (i == class_.getMethods()->size() - 1)
-                std::cout << "]";
+                cout << "]";
             else
-                std::cout << "," << std::endl;
+                cout << ", ";
         }
     }
     else
-        std::cout << "[]";
-    std::cout << ")";
+        cout << "[]";
+    cout << ")";
+
 }
 
 void PrintVisitor::visit(Program<void> &program)
 {
-    std::cout << "[";
+    cout << "[";
     if (!program.getClasses()->empty())
     {
         for (unsigned long i = 0; i < program.getClasses()->size(); i++)
         {
             (*program.getClasses())[i]->accept(*this);
             if (i == program.getClasses()->size() - 1)
-                std::cout << "]";
+                cout << "]";
             else
-                std::cout << "," << std::endl;
+                cout << "," << endl;
         }
     }
     else
-        std::cout << "[]" << std::endl;
+        cout << "[]" << endl;
 
-    std::cout << std::endl;
+    cout << endl;
 }
 
 PrintVisitor::~PrintVisitor()
@@ -767,7 +775,7 @@ template class Type<void>;
 template class Formal<void>;
 template class Block<void>;
 template class Conditional<void>;
-template class While<void>;
+template class WhileLoop<void>;
 template class Let<void>;
 template class Assign<void>;
 template class UnOp<void>;

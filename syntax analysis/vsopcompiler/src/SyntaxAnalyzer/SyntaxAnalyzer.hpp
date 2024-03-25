@@ -10,6 +10,8 @@
 
 namespace Compilers::Parsers
 {
+    extern std::string FILE_NAME;
+
 // Give prototype of yylex() function, then declare it.
 #define YY_DECL Parser::symbol_type yylex(SyntaxAnalyzer& synAnalysis)
     YY_DECL;
@@ -25,9 +27,9 @@ namespace Compilers::Parsers
         Parser::symbol_type YYlex();
         int parse();
         Parser::symbol_type convertLexTokenToParseToken(Tokens::Token token, const Parser::location_type &loc);
+        std::string get_filename();
 
     protected:
-        //std::unique_ptr<Compilers::Parsers::Parser> parser; /**< Pointer to the parser instance. */
         std::unique_ptr<LexicalAnalyzers::LexicalAnalyzer> lexAnalysis; /**< Pointer to the lexical analyzer instance. */
     };
 

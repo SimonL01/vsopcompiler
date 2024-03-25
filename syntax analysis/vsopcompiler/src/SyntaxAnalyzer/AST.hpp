@@ -32,7 +32,7 @@ class Type : public Expr<T>
 public:
     Type(const std::string type);
     auto accept(Visitor<T> &v) -> T override;
-    const std::string getType();
+    const std::string get_type();
     ~Type();
 
 private:
@@ -51,8 +51,8 @@ class Formal : public Expr<T>
 public:
     Formal(const std::string name, Type<T> type);
     auto accept(Visitor<T> &v) -> T override;
-    const std::string getName();
-    Type<T> getType();
+    const std::string get_name();
+    Type<T> get_type();
     ~Formal();
 
 private:
@@ -68,14 +68,14 @@ template <typename T>
 class Block : public Expr<T>
 {
 public:
-    Block(std::vector<Expr<T> *> *expr_list);
+    Block(std::vector<Expr<T> *> *blockExrps);
     auto accept(Visitor<T> &v) -> T override;
-    std::vector<Expr<T> *> *getExpr_list();
-    void AddExpr(Expr<T> *e);
+    std::vector<Expr<T> *> *get_blockExrps();
+    void Add_expr(Expr<T> *expr);
     ~Block();
 
 private:
-    std::vector<Expr<T> *> *expr_list;
+    std::vector<Expr<T> *> *blockExrps;
 };
 
 /************************************/
@@ -100,18 +100,18 @@ private:
 };
 
 /************************************/
-/*           While class            */
+/*         WhileLoop class          */
 /************************************/
 
 template <typename T>
-class While : public Expr<T>
+class WhileLoop : public Expr<T>
 {
 public:
-    While(Expr<T> *cond_expr, Expr<T> *body_expr);
+    WhileLoop(Expr<T> *cond_expr, Expr<T> *body_expr);
     auto accept(Visitor<T> &v) -> T override;
     Expr<T> *getCond_expr();
     Expr<T> *getBody_expr();
-    ~While();
+    ~WhileLoop();
 
 private:
     Expr<T> *cond_expr;
@@ -128,8 +128,8 @@ class Let : public Expr<T>
 public:
     Let(const std::string name, Type<T> type, Expr<T> *scope_expr, Expr<T> *init_expr = nullptr);
     auto accept(Visitor<T> &v) -> T override;
-    const std::string getName();
-    Type<T> getType();
+    const std::string get_name();
+    Type<T> get_type();
     Expr<T> *getInit_expr();
     Expr<T> *getScope_expr();
     ~Let();
@@ -151,7 +151,7 @@ class Assign : public Expr<T>
 public:
     Assign(const std::string name, Expr<T> *expr);
     auto accept(Visitor<T> &v) -> T override;
-    const std::string getName();
+    const std::string get_name();
     Expr<T> *getExpr();
     ~Assign();
 
@@ -213,7 +213,7 @@ public:
     const std::string getMethod_name();
     Expr<T> *getObj_expr();
     std::vector<Expr<T> *> *getExpr_list();
-    void AddExpr(Expr<T> *e);
+    void Add_expr(Expr<T> *expr);
     ~Call();
 
 private:
@@ -232,7 +232,7 @@ class New : public Expr<T>
 public:
     New(const std::string type_name);
     auto accept(Visitor<T> &v) -> T override;
-    const std::string getType_name();
+    const std::string get_type_name();
     ~New();
 
 private:
@@ -249,7 +249,7 @@ class ObjectIdentifier : public Expr<T>
 public:
     ObjectIdentifier(const std::string name);
     auto accept(Visitor<T> &v) -> T override;
-    const std::string getName();
+    const std::string get_name();
     ~ObjectIdentifier();
 
 private:
@@ -311,13 +311,13 @@ template <typename T>
 class StringLiteral : public Expr<T>
 {
 public:
-    StringLiteral(const std::string stringVal);
+    StringLiteral(const std::string str);
     auto accept(Visitor<T> &v) -> T override;
-    const std::string getStringVal();
+    const std::string get_str();
     ~StringLiteral();
 
 private:
-    const std::string stringVal;
+    const std::string str;
 };
 
 /************************************/
@@ -328,13 +328,13 @@ template <typename T>
 class BooleanLiteral : public Expr<T>
 {
 public:
-    BooleanLiteral(const std::string val);
+    BooleanLiteral(const std::string boolean);
     auto accept(Visitor<T> &v) -> T override;
-    const std::string getVal();
+    const std::string get_bool();
     ~BooleanLiteral();
 
 private:
-    const std::string val;
+    const std::string boolean;
 };
 
 /************************************/
@@ -345,10 +345,10 @@ template <typename T>
 class Field : public Expr<T>
 {
 public:
-    Field(const std::string name, Type<T> type, Expr<T> *init_expr = nullptr);
+    Field(const std::string name, Type<T> type, Expr<T> *init_expr);
     auto accept(Visitor<T> &v) -> T override;
-    const std::string getName();
-    Type<T> getType();
+    const std::string get_name();
+    Type<T> get_type();
     Expr<T> *getInit_expr();
     ~Field();
 
@@ -368,11 +368,11 @@ class Method : public Expr<T>
 public:
     Method(const std::string name, std::vector<Formal<T> *> *formals, Type<T> ret_type, Block<T> *block);
     auto accept(Visitor<T> &v) -> T override;
-    const std::string getName();
-    std::vector<Formal<T> *> *getFormals();
+    const std::string get_name();
+    std::vector<Formal<T> *> *get_formals();
     Type<T> getRet_type();
-    Block<T> *getBlock();
-    void AddFormal(Formal<T> *f);
+    Block<T> *get_block();
+    void add_formal(Formal<T> *formal);
     ~Method();
 
 private:
@@ -390,21 +390,21 @@ template <typename T>
 class Class : public Expr<T>
 {
 public:
-    Class(const std::string name, std::vector<Method<T> *> *methods, std::vector<Field<T> *> *fields, const std::string parent = "");
+    Class(const std::string name, const std::string parent, std::vector<Field<T> *> *fields, std::vector<Method<T> *> *methods);
     auto accept(Visitor<T> &v) -> T override;
-    const std::string getName();
+    const std::string get_name();
     const std::string getParent();
-    std::vector<Method<T> *> *getMethods();
     std::vector<Field<T> *> *getFields();
-    void AddMethod(Method<T> *m);
-    void AddField(Field<T> *f);
+    std::vector<Method<T> *> *getMethods();
+    void AddMethod(Method<T> *method);
+    void AddField(Field<T> *field);
     ~Class();
 
 private:
     const std::string name;
     const std::string parent;
-    std::vector<Method<T> *> *methods;
     std::vector<Field<T> *> *fields;
+    std::vector<Method<T> *> *methods;
 };
 
 /************************************/
@@ -415,6 +415,7 @@ template <typename T>
 class Program : public Expr<T>
 {
 public:
+    //Program();
     Program(std::vector<Class<T> *> *classes);
     auto accept(Visitor<T> &v) -> T override;
     std::vector<Class<T> *> *getClasses();
@@ -437,7 +438,7 @@ public:
     virtual T visit(class Formal<T> &formal) = 0;
     virtual T visit(class Block<T> &block) = 0;
     virtual T visit(class Conditional<T> &conditional) = 0;
-    virtual T visit(class While<T> &while_) = 0;
+    virtual T visit(class WhileLoop<T> &whileLoop) = 0;
     virtual T visit(class Let<T> &let) = 0;
     virtual T visit(class Assign<T> &assign) = 0;
     virtual T visit(class UnOp<T> &unOp) = 0;
@@ -468,7 +469,7 @@ public:
     void visit(Formal<void> &formal);
     void visit(Block<void> &block);
     void visit(Conditional<void> &conditional);
-    void visit(While<void> &while_);
+    void visit(WhileLoop<void> &whileLoop);
     void visit(Let<void> &let);
     void visit(Assign<void> &assign);
     void visit(UnOp<void> &unOp);
