@@ -647,7 +647,8 @@ void PrintVisitor::visit(IntegerLiteral<void> &intergerLitteral)
 
 void PrintVisitor::visit(StringLiteral<void> &stringLitteral)
 {
-    std::cout << "\"" << stringLitteral.getStringVal() << "\"";
+    //std::cout << "\"" << stringLitteral.getStringVal() << "\"";
+    std::cout << stringLitteral.getStringVal();
 }
 
 void PrintVisitor::visit(BooleanLiteral<void> &booleanLitteral)

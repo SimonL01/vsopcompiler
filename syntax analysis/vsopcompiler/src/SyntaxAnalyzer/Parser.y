@@ -109,37 +109,45 @@
 
 %define parse.error verbose
 
-
+// Declaration of non-terminal symbols
 %nterm <Class<void>*> list_class class class_body class_body_repetition
 %nterm <Field<void>*> field
 %nterm <Method<void>*> method
-%nterm <std::string> type class_optional
-%nterm <std::vector<Formal<void>*>*> formals formals_repetition  
 %nterm <Formal<void>*> formal
+%nterm <std::string> type class_optional
+%nterm <std::vector<Formal<void>*>*> formals formals_repetition
 %nterm <std::vector<Expr<void>*>*> block block_repetition args args_repetition
-%nterm <Expr<void>*> expr par conditional while let assign unop binop call new literal field_optional let_optional                    
-%nterm <std::vector<Class<void>*>*> class_declaration_list                                         
+%nterm <std::vector<Class<void>*>*> class_declaration_list
+%nterm <Expr<void>*> expr par conditional while let assign unop binop call new literal field_optional let_optional
 
 %precedence IF THEN WHILE DO LET IN
 %precedence ELSE 
 
 // Precedence
-%right "<-"
-%left "and"
-%right "not"
-%nonassoc "<" "<=" "="
-%left "+" "-"
+%left "+" "-" // Could also do: %left PLUS MINUS
 %left "*" "/"
+%right "<-"
+%right "not"
 %right "unary-" "isnull"
 %right "^"
+%left "and"
 %left "."
+%nonassoc "<" "<=" "="
 
 %%
 // Grammar rules
+
+// "program" is the start symbol for the grammar.
 %start program;
 
+// Parsing is trying to match this non-terminal symbol according to its defining rules : "non-terminal: rule {actions}".
+// Actions, enclosed in "{}" are executed when a rule is successfully matched.
+
+// The rule for "program" is defined to match a sequence of classes encapsulated as "list_class class_declaration_list" reflecting the structure of a VSOP program.
+// "$1" is the class parsed by "list_class" here as it is the correct order.
+// "$2" is the vector of classes parsed by "class_declaration_list".
+// Bison actions use "$n" syntax to refer to the value of the nth component of the left-hand side in the rule.
 program:    list_class class_declaration_list {$2->push_back($1); std::reverse($2->begin(), $2->end()); synAnalysis.program = new Program<void>($2);};
-            //|error class_declaration_list {std::cout<<"Expected class definition"<<std::endl; driver.parseError = 1;};
 
 class_declaration_list : /*empty*/ {$$ = new std::vector<Class<void>*>();}
                     | list_class class_declaration_list {$2->push_back($1); $$ = $2;};
@@ -180,6 +188,8 @@ block: LBRACE expr block_repetition RBRACE{$3->push_back($2); $$ = $3;};
 block_repetition: /* empty */ {$$ = new std::vector<Expr<void>*>();}
                 |SEMICOLON expr block_repetition {$3->push_back($2); $$=$3;}; 
 
+// | can be seen as "or"
+// [ ] can be seen as optional
 expr: conditional
      | while 
      | let  
