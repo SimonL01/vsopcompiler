@@ -10,10 +10,15 @@
 
 namespace Compilers::Parsers
 {
-    extern std::string FILE_NAME;
+    extern std::string FILE_NAME; /**< Global variable to store the filename. */
 
-// Give prototype of yylex() function, then declare it.
-#define YY_DECL Parser::symbol_type yylex(SyntaxAnalyzer& synAnalysis)
+    /**
+     * Prototype of the yylex() function.
+     *
+     * @param synAnalysis Reference to the SyntaxAnalyzer object.
+     * @return The next token.
+     */
+    #define YY_DECL Parser::symbol_type yylex(SyntaxAnalyzer& synAnalysis)
     YY_DECL;
 
     /**
@@ -22,12 +27,45 @@ namespace Compilers::Parsers
     class SyntaxAnalyzer
     {
     public:
+        /**
+         * Constructor for SyntaxAnalyzer class.
+         *
+         * @param sourceFile Path to the source file.
+         * @param sourceFileName Name of the source file.
+         */
         SyntaxAnalyzer(const std::string &sourceFile, const std::string &sourceFileName);
+
         Program<void> *program;
-        Parser::symbol_type YYlex();
+
+        /**
+         * Parses the source code.
+         *
+         * @return Operation success flag.
+         */
         int parse();
-        Parser::symbol_type convertLexTokenToParseToken(Tokens::Token token, const Parser::location_type &loc);
+
+        /**
+         * Retrieves the filename associated with the syntax analyzer's lexical analyzer.
+         *
+         * @return Filename.
+         */
         std::string get_filename();
+
+        /**
+         * Retrieves the next token from the source code.
+         *
+         * @return Next token from the source code.
+         */
+        Parser::symbol_type YYlex();
+
+        /**
+         * Converts a lexical token to a parse token.
+         *
+         * @param token The lexical token to be converted.
+         * @param loc The location information of the token.
+         * @return Parse token.
+         */
+        Parser::symbol_type convertLexTokenToParseToken(Tokens::Token token, const Parser::location_type &loc);
 
     protected:
         std::unique_ptr<LexicalAnalyzers::LexicalAnalyzer> lexAnalysis; /**< Pointer to the lexical analyzer instance. */

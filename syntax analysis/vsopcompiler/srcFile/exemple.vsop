@@ -6,7 +6,7 @@ class List {
 class Nil extends List { }
 
 class Cons extends List {
-    head : int32;
+    head : int3;
     tail : List;
     init(hd : int32, tl : List) : Cons {
         head <- hd;
@@ -30,6 +30,7 @@ class Main {
         }
     }
 }
+
 
 (*
 class P {name() : string {"P"} }

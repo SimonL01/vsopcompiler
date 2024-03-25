@@ -16,8 +16,6 @@ using std::string;
 using std::unique_ptr;
 using std::vector;
 
-
-
 namespace Compilers::Parsers
 {
     string FILE_NAME;
@@ -150,7 +148,6 @@ namespace Compilers::Parsers
 
         /* token location definition */
         Parser::location_type loc = location(posBegin, posEnd);
-        
 
         Parser::symbol_type pToken = convertLexTokenToParseToken(token, loc);
         return pToken;
@@ -164,7 +161,7 @@ namespace Compilers::Parsers
     int SyntaxAnalyzer::parse()
     {
         std::unique_ptr<Compilers::Parsers::Parser> parser = make_unique<Parser>(*this);
-        init_filename(*this);
+        init_filename(*this); // Initialize the FILE_NAME global variable
         int opSucces = parser->parse();
 
         if (opSucces == 0)

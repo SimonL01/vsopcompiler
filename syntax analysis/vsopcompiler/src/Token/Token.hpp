@@ -6,13 +6,13 @@
 namespace Compilers::Tokens
 {
     /**
-     * Class representing a token in the compiler.
+     * @brief Class representing a token in the compiler.
      */
     class Token
     {
     public:
         /**
-         * Enumeration representing the class of the token.
+         * @brief Enumeration representing the class of the token.
          */
         enum class TClass
         {
@@ -62,21 +62,21 @@ namespace Compilers::Tokens
         };
 
         /**
-         * Convert a token class enumeration value to its string representation.
+         * @brief Convert a token class enumeration value to its string representation.
          *
          * @param tokenClass Token class enumeration value.
-         * @return String representation of the token class.
+         * @return std::string String representation of the token class.
          */
         static std::string token_ToString(TClass tokenClass);
 
     public:
         /**
-         * Default constructor for Token class.
+         * @brief Default constructor for Token class.
          */
         Token();
 
         /**
-         * Constructor for Token class with specified token class, line, and column.
+         * @brief Constructor for Token class with specified token class, line, and column.
          *
          * @param tokenClass Class of the token.
          * @param line Line number of the token.
@@ -85,7 +85,7 @@ namespace Compilers::Tokens
         Token(TClass tokenClass, size_t line, size_t column);
 
         /**
-         * Constructor for Token class with specified token class, value, line, and column.
+         * @brief Constructor for Token class with specified token class, value, line, and column.
          *
          * @param tokenClass Class of the token.
          * @param tokenValue Value of the token (if applicable).
@@ -95,22 +95,37 @@ namespace Compilers::Tokens
         Token(TClass tokenClass, std::string tokenValue, size_t line, size_t column);
 
         /**
-         * Get the class of the token.
+         * @brief Get the class of the token.
          *
-         * @return Class of the token.
+         * @return TClass Class of the token.
          */
         TClass get_tokenClass() const;
 
+        /**
+         * @brief Get the value of the token.
+         *
+         * @return std::string Value of the token.
+         */
         std::string get_tokenValue() const;
 
         /**
-         * Print the token information.
+         * @brief Get the line number of the token.
+         *
+         * @return size_t Line number of the token.
          */
-        void print_token() const;
-
         size_t get_line() const;
 
+        /**
+         * @brief Get the column number of the token.
+         *
+         * @return size_t Column number of the token.
+         */
         size_t get_column() const;
+
+        /**
+         * @brief Print the token information.
+         */
+        void print_token() const;
 
     protected:
         TClass tokenClass;      /**< Class of the token. */

@@ -102,10 +102,25 @@ namespace Compilers::LexicalAnalyzers
          */
         void print_error(size_t line, size_t column, const std::string &lexicalErrorDescription);
 
+        /**
+         * Retrieves the name of the source file.
+         *
+         * @return Name of the source file.
+         */
         std::string get_file_name();
 
+        /**
+         * Retrieves the current column number.
+         *
+         * @return Current column number.
+         */
         size_t get_column();
 
+        /**
+         * Retrieves the current line number.
+         *
+         * @return Current line number.
+         */
         size_t get_line();
 
     protected:
