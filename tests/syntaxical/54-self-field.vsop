@@ -1,5 +1,0 @@
-class Main {
-    self : int32;
-
-    main() : int32 { 0 }
-}
