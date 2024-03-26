@@ -8,6 +8,7 @@ INFO0085 - Compilers - VSOP Compiler Project
 # Table of Contents
 1. [Lexical Analysis](#Lexical-Analysis)
 2. [Syntax Analysis](#Syntax-Analysis)
+3. [Semantic Analysis](#semantic-analysis)
 
 ## Lexical Analysis
 Also known as Scanning \
@@ -62,3 +63,22 @@ Output : Syntax Tree
 
 - [ ] Result : \
     ![Local Image](images/syntax-analysis-result.PNG)
+
+## Semantic Analysis
+Input : Syntax Tree \
+Output : (Augmented) Syntax Tree
+- [ ] Context-free grammars are unable to capture some of the language constraints (e.g. non local/context-dependent relations)
+- [ ] Semantic/contextual analysis checks the source program for semantic consistency with the language definition :
+    -> a variable can not be used without having been defined
+    -> the same variable can not be defined twice
+    -> the number of arguments of a function should match its definition
+    -> one can not multiply a number and a string
+Such constraints are not captured by context-free grammars
+- [ ] Semantic analysis also carries out type checking 
+    -> each operator should have matching operands
+    -> in some cases, implicit type conversion (a.k.a. coercion) might occur (e.g., for numbers)
+- [ ] Example: position = initial + rate * 60
+    -> If the variables position, initial, and rate are defined as floating-point variables and 60 was as an integer, it may be converted into a floating-point number
+
+- [ ] Result : \
+    ![Local Image](images/semantic/semantic-analysis.PNG)
